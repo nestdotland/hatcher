@@ -1,4 +1,4 @@
-import { path } from "./deps.ts";
+import { path } from "../deps.ts";
 
 function homedir() {
   return Deno.env.get("HOME") || Deno.env.get("HOMEPATH") || Deno.env.get("USERPROFILE") || "/";
