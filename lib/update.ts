@@ -2,6 +2,20 @@ import { readJson, writeJson, semver, colors, Table } from "./deps.ts";
 import { getLatestVersion } from "./registries.ts";
 import { globalModulesConfigPath } from "./config.ts";
 
+type Config = {
+  [key: string]: Module;
+};
+
+interface Module {
+  moduleName: string;
+  installName: string;
+  owner: string;
+  version: string;
+  registry: string;
+  args: string[];
+  lastUpdateCheck: number;
+}
+
 export class UpdateNotifier {
   moduleName = "";
   installName = "";
@@ -10,7 +24,7 @@ export class UpdateNotifier {
   registry = "";
   installationArgs: string[] = [];
   lastUpdateCheck = Date.now();
-  config: any = {};
+  config: Config = {};
   configPath = globalModulesConfigPath();
 
   constructor(
@@ -56,7 +70,7 @@ export class UpdateNotifier {
       }
 
       if (!latestVersion || !semver.valid(latestVersion)) {
-        return
+        return;
       }
 
       const current = semver.coerce(this.currentVersion) || "0.0.1";
@@ -83,10 +97,10 @@ Run ${colors.magenta("eggs update -g " + this.installName)} to update`;
     box(notification);
   }
 
-  async readConfig(): Promise<any> {
+  async readConfig(): Promise<Config> {
     try {
       const config = await readJson(this.configPath);
-      return config;
+      return config as Config;
     } catch {
       box(
         `${
@@ -97,7 +111,7 @@ Run ${colors.magenta("eggs update -g " + this.installName)} to update`;
     }
   }
 
-  async writeConfig(config: any) {
+  async writeConfig(config: Config) {
     await writeJson(this.configPath, config, { spaces: 2 });
   }
 

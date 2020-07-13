@@ -5,9 +5,11 @@ export const versionSubstitute = "${version}";
 /** Gets latest version from supported registries */
 export async function getLatestVersion(
   registry: string,
-  moduleName: string = "",
-  owner: string = "",
+  moduleName?: string,
+  owner?: string,
 ) {
+  moduleName = moduleName ?? "";
+  owner = owner ?? "";
   switch (registry) {
     case "x.nest.land":
       return getLatestVersionFromNestRegistry(moduleName);
@@ -51,8 +53,15 @@ export function analyzeURL(url: string) {
   }
 }
 
+type Registry = {
+  [key: string]: {
+    owner: string;
+    repo: string;
+  };
+};
+
 /** To aid in getting the owner and GitHub repo name for a 3rd party modules */
-let denoRegistry: any;
+let denoRegistry: Registry;
 
 /** Fetches the deno registry only if needed */
 export async function getDenoRegistry() {
