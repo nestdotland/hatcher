@@ -1,13 +1,14 @@
 {
   "name": "hatcher",
   "description": "Utility module to handle global updates",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "unlisted": true,
   "stable": true,
   "files": [
     "README.md",
     "mod.ts",
     "cli.ts",
+    "deps.ts",
     "lib/*"
   ]
 }
