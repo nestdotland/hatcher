@@ -1,4 +1,4 @@
-import { colors } from "./lib/deps.ts";
+import { colors } from "./deps.ts";
 import { UpdateNotifier, box } from "./lib/update.ts";
 
 const onWindows = Deno.build.os === "windows";

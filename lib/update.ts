@@ -1,4 +1,4 @@
-import { readJson, writeJson, semver, colors, Table } from "./deps.ts";
+import { readJson, writeJson, semver, colors, Table } from "../deps.ts";
 import { getLatestVersion } from "./registries.ts";
 import { globalModulesConfigPath } from "./config.ts";
 
