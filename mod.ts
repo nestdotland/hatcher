@@ -7,7 +7,7 @@ export async function installUpdateHandler(
   moduleName: string,
   execName: string,
   updateCheckInterval: number = oneDay,
-  log?: Logger
+  log?: Logger,
 ) {
   const installation = Deno.run({
     cmd: [
@@ -41,5 +41,5 @@ export async function installUpdateHandler(
 }
 
 type Logger = {
-  debug: <T>(msg: T, ...args: unknown[]) => T | undefined
-}
+  debug: <T>(msg: T, ...args: unknown[]) => T | undefined;
+};
