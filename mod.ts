@@ -7,6 +7,7 @@ export async function installUpdateHandler(
   moduleName: string,
   execName: string,
   updateCheckInterval: number = oneDay,
+  log?: Logger,
 ) {
   const installation = Deno.run({
     cmd: [
@@ -17,7 +18,7 @@ export async function installUpdateHandler(
       "-A",
       "-n",
       moduleName,
-      "https://x.nest.land/eggs-update-handler@0.5.1/cli.ts",
+      "https://x.nest.land/hatcher@0.7.0/cli.ts",
       execName,
       updateCheckInterval.toString(),
     ],
@@ -26,7 +27,19 @@ export async function installUpdateHandler(
   const status = await installation.status();
   installation.close();
 
+  const stdout = new TextDecoder("utf-8").decode(await installation.output());
+  const stderr = new TextDecoder("utf-8").decode(
+    await installation.stderrOutput(),
+  );
+
+  log?.debug("stdout: ", stdout);
+  log?.debug("stderr: ", stderr);
+
   if (status.success === false || status.code !== 0) {
     throw new Error("Update handler installation failed.");
   }
 }
+
+type Logger = {
+  debug: <T>(msg: T, ...args: unknown[]) => T | undefined;
+};
