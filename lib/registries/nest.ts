@@ -1,4 +1,10 @@
-import { fetchTimeout, parseModule, versionSubstitute, sortVersions, latest } from "../utilities.ts";
+import {
+  fetchTimeout,
+  parseModule,
+  versionSubstitute,
+  sortVersions,
+  latest,
+} from "../utilities.ts";
 
 export class Nest {
   static async fetchModuleData(module: string) {

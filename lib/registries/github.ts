@@ -6,7 +6,6 @@ import {
 } from "../utilities.ts";
 
 export class Github {
-
   /** Get the latest release/tag of a GitHub repository */
   static async getLatestVersion(
     module: string,
@@ -17,7 +16,7 @@ export class Github {
       5000,
     );
     const json = await res.json();
-    const versions: string[] = json.map((release: any) => release.tag_name);
+    const versions: string[] = json.map((release: Release) => release.tag_name);
     const sorted = sortVersions(versions);
     if (sorted.length === 0) {
       const res = await fetchTimeout(
@@ -25,7 +24,7 @@ export class Github {
         5000,
       );
       const json = await res.json();
-      const versions: string[] = json.map((tag: any) => tag.name);
+      const versions: string[] = json.map((tag: Tag) => tag.name);
       const sorted = sortVersions(versions);
       return latest(sorted);
     }
@@ -44,3 +43,11 @@ export class Github {
     return { name, version, parsedURL, owner };
   }
 }
+
+type Release = {
+  tag_name: string;
+};
+
+type Tag = {
+  name: string;
+};

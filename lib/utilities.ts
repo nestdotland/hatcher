@@ -18,9 +18,9 @@ export function sortVersions(list: Array<string | semver.SemVer | null>) {
   const valid = list
     .map((version) => semver.valid(version))
     .filter((version) => version !== null);
-  return semver.sort(valid as string[])
+  return semver.sort(valid as string[]);
 }
 
 export function latest<T>(list: T[]) {
-  return list[list.length - 1]
+  return list[list.length - 1];
 }
