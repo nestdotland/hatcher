@@ -1,55 +1,51 @@
-import { readJson, writeJson, semver, colors, Table } from "../deps.ts";
+import {
+  readGlobalModuleConfig,
+  writeGlobalModuleConfig,
+  GlobalModuleConfig,
+} from "./config.ts";
+import { semver, colors } from "../deps.ts";
 import { getLatestVersion } from "./registries.ts";
-import { globalModulesConfigPath } from "./config.ts";
-
-type Config = {
-  [key: string]: Module;
-};
-
-interface Module {
-  moduleName: string;
-  installName: string;
-  owner: string;
-  version: string;
-  registry: string;
-  args: string[];
-  lastUpdateCheck: number;
-}
+import { box } from "./utils.ts";
 
 export class UpdateNotifier {
-  moduleName = "";
-  installName = "";
-  owner = "";
-  currentVersion = "";
-  registry = "";
-  installationArgs: string[] = [];
-  lastUpdateCheck = Date.now();
-  config: Config = {};
-  configPath = globalModulesConfigPath();
+  public name = "";
+  public alias = "";
+  public owner = "";
+  public currentVersion = "";
+  public registry = "";
+  public arguments: string[] = [];
+  public lastUpdateCheck = Date.now();
+  public config: GlobalModuleConfig = {};
 
   constructor(
-    public execName: string,
+    public executable: string,
     public updateCheckInterval: number,
   ) {}
 
   async init() {
-    const config = await this.readConfig();
+    let config: GlobalModuleConfig;
+    try {
+      config = await readGlobalModuleConfig();
+    } catch (err) {
+      box(`${colors.red("Error")} ${err}`);
+      Deno.exit(1);
+    }
     this.config = config;
-    const module = config[this.execName];
+    const module = config[this.executable];
 
     if (module) {
-      this.moduleName = module.moduleName;
-      this.installName = module.installName;
+      this.name = module.name;
+      this.alias = module.alias;
       this.owner = module.owner;
       this.currentVersion = module.version;
       this.registry = module.registry;
-      this.installationArgs = module.args;
+      this.arguments = module.arguments;
       this.lastUpdateCheck = module.lastUpdateCheck;
     } else {
       box(
         `${
           colors.red("Error")
-        } ${this.execName} is missing in the global config file.`,
+        } ${this.executable} is missing in the global config file.`,
       );
       Deno.exit(1);
     }
@@ -61,7 +57,7 @@ export class UpdateNotifier {
       try {
         latestVersion = await getLatestVersion(
           this.registry,
-          this.moduleName,
+          this.name,
           this.owner,
         );
       } catch {
@@ -82,49 +78,22 @@ export class UpdateNotifier {
         this.notify(from, to);
       }
 
-      this.config[this.execName].lastUpdateCheck = Date.now();
-      this.writeConfig(this.config);
+      this.config[this.executable].lastUpdateCheck = Date.now();
+      writeGlobalModuleConfig(this.config);
     }
   }
 
   notify(from: string, to: string) {
-    const notification = `New version of ${
-      colors.red(this.moduleName)
-    } available! ${colors.yellow(from)} → ${colors.green(to)}
-Registry ${colors.cyan(this.registry)}
-Run ${colors.magenta("eggs update -g " + this.installName)} to update`;
+    const notification = `New version of ${colors.red(this.name)} available! ${
+      colors.yellow(from)
+    } → ${colors.green(to)}\nRegistry ${colors.cyan(this.registry)}\nRun ${
+      colors.magenta("eggs update -g " + this.alias)
+    } to update`;
 
     box(notification);
-  }
-
-  async readConfig(): Promise<Config> {
-    try {
-      const config = await readJson(this.configPath);
-      return config as Config;
-    } catch {
-      box(
-        `${
-          colors.red("Error")
-        } config file doesn't exist.\nPlease reinstall the module.`,
-      );
-      Deno.exit(1);
-    }
-  }
-
-  async writeConfig(config: Config) {
-    await writeJson(this.configPath, config, { spaces: 2 });
   }
 
   needCheck() {
     return Date.now() - this.lastUpdateCheck > this.updateCheckInterval;
   }
-}
-
-export function box(text: string) {
-  console.log("");
-  Table.from([[text]])
-    .padding(1)
-    .indent(2)
-    .border(true)
-    .render();
 }

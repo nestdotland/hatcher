@@ -1,4 +1,4 @@
-import { semver } from "../deps.ts";
+import { semver, Table } from "../deps.ts";
 
 export const versionSubstitute = "${version}";
 
@@ -23,4 +23,13 @@ export function sortVersions(list: Array<string | semver.SemVer | null>) {
 
 export function latest<T>(list: T[]) {
   return list[list.length - 1];
+}
+
+export function box(text: string) {
+  console.log("");
+  Table.from([[text]])
+    .padding(1)
+    .indent(2)
+    .border(true)
+    .render();
 }
