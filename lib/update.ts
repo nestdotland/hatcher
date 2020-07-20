@@ -79,7 +79,7 @@ export class UpdateNotifier {
       }
 
       this.config[this.executable].lastUpdateCheck = Date.now();
-      writeGlobalModuleConfig(this.config);
+      await writeGlobalModuleConfig(this.config);
     }
   }
 

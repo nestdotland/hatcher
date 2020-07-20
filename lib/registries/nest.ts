@@ -4,7 +4,7 @@ import {
   versionSubstitute,
   sortVersions,
   latest,
-} from "../utilities.ts";
+} from "../utils.ts";
 
 export class Nest {
   static async fetchModuleData(module: string) {

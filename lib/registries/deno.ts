@@ -1,4 +1,4 @@
-import { fetchTimeout, parseModule, versionSubstitute } from "../utilities.ts";
+import { fetchTimeout, parseModule, versionSubstitute } from "../utils.ts";
 import { Github } from "./github.ts";
 
 export class Deno {
