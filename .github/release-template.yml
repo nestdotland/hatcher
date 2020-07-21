@@ -1,0 +1,41 @@
+name-template: '$RESOLVED_VERSION'
+
+tag-template: '$RESOLVED_VERSION'
+
+categories:
+  - title: '🚀 Features'
+    labels: 'type: feature'
+
+  - title: '🐛 Bug Fixes'
+    labels: 'type: bugfix'
+
+#  - title: '🧰 Chores'
+#    label: ['type: chore', 'meta: documentation']
+
+change-template: '- [#$NUMBER]($URL) $TITLE (@$AUTHOR)'
+
+version-resolver:
+  major:
+    labels:
+      - 'semver: major'
+
+  minor:
+    labels:
+      - 'semver: minor'
+
+  patch:
+    labels:
+      - 'semver: patch'
+
+  default: patch
+
+template: |
+  ### $RESOLVED_VERSION
+
+  ```sh
+  https://x.nest.land/hatcher@$RESOLVED_VERSION/mod.ts
+  ```
+  
+  ## CHANGELOG
+
+  $CHANGES
