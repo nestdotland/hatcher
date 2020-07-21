@@ -4,8 +4,8 @@ const oneDay = 1000 * 60 * 60 * 24;
 export * from "./lib/config.ts";
 
 export async function installUpdateHandler(
-  moduleName: string,
-  execName: string,
+  module: string,
+  executable: string,
   updateCheckInterval: number = oneDay,
   log?: Logger,
 ) {
@@ -17,9 +17,9 @@ export async function installUpdateHandler(
       "-f",
       "-A",
       "-n",
-      moduleName,
+      module,
       "https://x.nest.land/hatcher@0.7.0/cli.ts",
-      execName,
+      executable,
       updateCheckInterval.toString(),
     ],
   });

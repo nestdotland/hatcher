@@ -1,7 +1,7 @@
 import {
   versionSubstitute,
   parseModule,
-} from "../utilities.ts";
+} from "../utils.ts";
 import { Github } from "./github.ts";
 
 export class Denopkg {
