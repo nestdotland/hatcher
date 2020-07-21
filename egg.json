@@ -9,6 +9,6 @@
     "mod.ts",
     "cli.ts",
     "deps.ts",
-    "lib/*"
+    "lib/**/*"
   ]
 }
