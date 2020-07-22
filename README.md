@@ -9,8 +9,8 @@ Internal module to help eggs handle global updates
 ## Module
 
 ```ts
-import * from "https://x.nest.land/hatcher@0.7.2/mod.ts"
-import * from "https://x.nest.land/hatcher@0.7.2/lib/registries.ts"
+import * from "https://x.nest.land/hatcher@0.7.3/mod.ts"
+import * from "https://x.nest.land/hatcher@0.7.3/lib/registries.ts"
 
 /** Install update handler cli to check for updates and notify user */
 function installUpdateHandler(moduleName: string, execName: string, updateCheckInterval?: number): Promise<void>
@@ -31,5 +31,5 @@ function analyzeURL(url: string): {
 ## CLI
 
 ```bash
-deno run https://x.nest.land/hatcher@0.7.2/cli.ts <MODULE> <UPDATE_CHECK_INTERVAL> [ARGS...]
+deno run https://x.nest.land/hatcher@0.7.3/cli.ts <MODULE> <UPDATE_CHECK_INTERVAL> [ARGS...]
 ```
