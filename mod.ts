@@ -7,7 +7,6 @@ export async function installUpdateHandler(
   module: string,
   executable: string,
   updateCheckInterval: number = oneDay,
-  log?: Logger,
 ) {
   const installation = Deno.run({
     cmd: [
@@ -18,31 +17,16 @@ export async function installUpdateHandler(
       "-A",
       "-n",
       module,
-      "https://x.nest.land/hatcher@0.7.2/cli.ts",
+      "https://x.nest.land/hatcher@0.7.3/cli.ts",
       executable,
       updateCheckInterval.toString(),
     ],
-    stdout: "piped",
-    stderr: "piped",
   });
 
   const status = await installation.status();
   installation.close();
 
-  const stdout = new TextDecoder("utf-8").decode(await installation.output());
-  const stderr = new TextDecoder("utf-8").decode(
-    await installation.stderrOutput(),
-  );
-
-  log?.info(stdout);
-  log?.info(stderr);
-
   if (status.success === false || status.code !== 0) {
     throw new Error("Update handler installation failed.");
   }
 }
-
-type Logger = {
-  debug: <T>(msg: T, ...args: unknown[]) => T | undefined;
-  info: <T>(msg: T, ...args: unknown[]) => T | undefined;
-};
