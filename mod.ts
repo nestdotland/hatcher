@@ -18,7 +18,7 @@ export async function installUpdateHandler(
       "-A",
       "-n",
       module,
-      "https://x.nest.land/hatcher@0.7.0/cli.ts",
+      "https://x.nest.land/hatcher@0.7.1/cli.ts",
       executable,
       updateCheckInterval.toString(),
     ],
