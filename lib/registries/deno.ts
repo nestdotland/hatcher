@@ -39,7 +39,7 @@ export class Deno {
   /** Analyzes deno.land url
    * https://deno.land/std@[VERSION]/[...].ts
    * https://deno.land/x/[NAME]@[VERSION]/[...].ts */
-  static async parseURL(url: string) {
+  static parseURL(url: string) {
     const tmpSplit = url.split("/");
     const { name: xOrStd } = parseModule(tmpSplit[3]);
     if (xOrStd === "x") {
