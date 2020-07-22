@@ -18,10 +18,12 @@ export async function installUpdateHandler(
       "-A",
       "-n",
       module,
-      "https://x.nest.land/hatcher@0.7.1/cli.ts",
+      "https://x.nest.land/hatcher@0.7.2/cli.ts",
       executable,
       updateCheckInterval.toString(),
     ],
+    stdout: "piped",
+    stderr: "piped",
   });
 
   const status = await installation.status();
@@ -32,8 +34,8 @@ export async function installUpdateHandler(
     await installation.stderrOutput(),
   );
 
-  log?.debug("stdout: ", stdout);
-  log?.debug("stderr: ", stderr);
+  log?.info(stdout);
+  log?.info(stderr);
 
   if (status.success === false || status.code !== 0) {
     throw new Error("Update handler installation failed.");
@@ -42,4 +44,5 @@ export async function installUpdateHandler(
 
 type Logger = {
   debug: <T>(msg: T, ...args: unknown[]) => T | undefined;
+  info: <T>(msg: T, ...args: unknown[]) => T | undefined;
 };
