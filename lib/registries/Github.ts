@@ -15,7 +15,7 @@ export class Github {
       `https://api.github.com/repos/${owner}/${module}/releases`,
       5000,
     );
-    const json = await res.json();
+    const json: Release[] = await res.json();
     const versions: string[] = json.map((release: Release) => release.tag_name);
     const sorted = sortVersions(versions);
     if (sorted.length === 0) {
@@ -23,7 +23,7 @@ export class Github {
         `https://api.github.com/repos/${owner}/${module}/tags`,
         5000,
       );
-      const json = await res.json();
+      const json: Tag[] = await res.json();
       const versions: string[] = json.map((tag: Tag) => tag.name);
       const sorted = sortVersions(versions);
       return latest(sorted);
@@ -52,5 +52,3 @@ type Release = {
 type Tag = {
   name: string;
 };
-
-console.log(await Github.getLatestVersion("deno", "denoland"));
