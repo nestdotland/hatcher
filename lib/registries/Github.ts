@@ -17,7 +17,7 @@ export class Github {
     );
     const json: Release[] = await res.json();
     if (!Array.isArray(json)) {
-      throw new Error(`${json} is not an array`);
+      throw new Error(`${Deno.inspect(json)} is not an array`);
     }
     const versions: string[] = json.map((release: Release) => release.tag_name);
     const sorted = sortVersions(versions);
