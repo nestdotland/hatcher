@@ -15,8 +15,8 @@ interface IURLdata {
 /** Get latest version from supported registries */
 export async function getLatestVersion(
   registry: string,
-  module: string = "",
-  owner: string = "",
+  module = "",
+  owner = "",
 ): Promise<string> {
   switch (registry) {
     case "x.nest.land":

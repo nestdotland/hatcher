@@ -10,7 +10,8 @@ Deno.test("Registries | Github | Parse raw.githubusercontent.com URL", () => {
     name: "[NAME]",
     owner: "[OWNER]",
     version: "[VERSION]",
-    parsedURL: "https://raw.githubusercontent.com/[OWNER]/[NAME]/${version}/[.../...].ts",
+    parsedURL:
+      "https://raw.githubusercontent.com/[OWNER]/[NAME]/${version}/[.../...].ts",
     relativePath: "[.../...].ts",
   });
 });

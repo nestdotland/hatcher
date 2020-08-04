@@ -53,4 +53,4 @@ type Tag = {
   name: string;
 };
 
-console.log(await Github.getLatestVersion("deno", "denoland"))
+console.log(await Github.getLatestVersion("deno", "denoland"));
