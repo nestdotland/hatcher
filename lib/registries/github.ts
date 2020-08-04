@@ -12,7 +12,7 @@ export class Github {
     owner: string,
   ): Promise<string> {
     const res = await fetchTimeout(
-      `https://api.github.com/repos${owner}/${module}/releases`,
+      `https://api.github.com/repos/${owner}/${module}/releases`,
       5000,
     );
     const json = await res.json();
@@ -20,7 +20,7 @@ export class Github {
     const sorted = sortVersions(versions);
     if (sorted.length === 0) {
       const res = await fetchTimeout(
-        `https://api.github.com/repos${owner}/${module}/tags`,
+        `https://api.github.com/repos/${owner}/${module}/tags`,
         5000,
       );
       const json = await res.json();
@@ -40,7 +40,7 @@ export class Github {
     tmpSplit[5] = versionSubstitute;
     const parsedURL = tmpSplit.join("/");
     const owner = tmpSplit[3];
-    const relativePath = tmpSplit.slice(6).join("/")
+    const relativePath = tmpSplit.slice(6).join("/");
     return { name, version, parsedURL, owner, relativePath };
   }
 }
@@ -52,3 +52,5 @@ type Release = {
 type Tag = {
   name: string;
 };
+
+console.log(await Github.getLatestVersion("deno", "denoland"))

@@ -2,7 +2,7 @@ import {
   versionSubstitute,
   parseModule,
 } from "../utils.ts";
-import { Github } from "./github.ts";
+import { Github } from "./Github.ts";
 
 export class Denopkg {
   /** Get the latest version of a denopkg module */
@@ -21,7 +21,7 @@ export class Denopkg {
     tmpSplit[4] = `${name}@${versionSubstitute}`;
     const parsedURL = tmpSplit.join("/");
     const owner = tmpSplit[3];
-    const relativePath = tmpSplit.slice(5).join("/")
+    const relativePath = tmpSplit.slice(5).join("/");
     return { name, version, parsedURL, owner, relativePath };
   }
 }

@@ -1,7 +1,7 @@
-import { Deno } from "./registries/deno.ts";
-import { Denopkg } from "./registries/denopkg.ts";
-import { Github } from "./registries/github.ts";
-import { Nest } from "./registries/nest.ts";
+import { DenoLand } from "./registries/DenoLand.ts";
+import { Denopkg } from "./registries/Denopkg.ts";
+import { Github } from "./registries/Github.ts";
+import { NestLand } from "./registries/NestLand.ts";
 
 interface IURLdata {
   name: string;
@@ -15,20 +15,15 @@ interface IURLdata {
 /** Get latest version from supported registries */
 export async function getLatestVersion(
   registry: string,
-  module?: string,
-  owner?: string,
+  module: string = "",
+  owner: string = "",
 ): Promise<string> {
-  module = module ?? "";
-  owner = owner ?? "";
   switch (registry) {
     case "x.nest.land":
-      return Nest.getLatestVersion(module);
+      return NestLand.getLatestVersion(module);
 
-    case "deno.land/x":
-      return Deno.getLatestXVersion(module);
-
-    case "deno.land/std":
-      return Deno.getLatestStdVersion();
+    case "deno.land":
+      return DenoLand.getLatestVersion(module);
 
     case "raw.githubusercontent.com":
     case "denopkg.com":
@@ -41,16 +36,14 @@ export async function getLatestVersion(
 
 /** Parse an URL from supported registries */
 export function parseURL(url: string): IURLdata {
-  const tmpSplit = url.split("/");
-  let registry = tmpSplit[2];
-  let owner = "";
+  let registry = url.split("/")[2];
 
   switch (registry) {
     case "x.nest.land":
-      return { registry, owner, ...Nest.parseURL(url) };
+      return { registry, owner: "", ...NestLand.parseURL(url) };
 
     case "deno.land":
-      return { owner, ...Deno.parseURL(url) };
+      return { registry, owner: "", ...DenoLand.parseURL(url) };
 
     case "raw.githubusercontent.com":
       return { registry, ...Github.parseURL(url) };
