@@ -9,6 +9,7 @@ interface IURLdata {
   parsedURL: string;
   registry: string;
   owner: string;
+  relativePath: string;
 }
 
 /** Get latest version from supported registries */

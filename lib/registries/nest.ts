@@ -40,6 +40,7 @@ export class Nest {
     const { name, version } = parseModule(tmpSplit[3]);
     tmpSplit[3] = `${name}@${versionSubstitute}`;
     const parsedURL = tmpSplit.join("/");
-    return { name, version, parsedURL };
+    const relativePath = tmpSplit.slice(4).join("/")
+    return { name, version, parsedURL, relativePath };
   }
 }

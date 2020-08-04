@@ -47,19 +47,24 @@ export class Deno {
       tmpSplit[4] = `${name}@${versionSubstitute}`;
       const parsedURL = tmpSplit.join("/");
       const registry = "deno.land/x";
-      return { name, version, parsedURL, registry };
+      const relativePath = tmpSplit.slice(5).join("/")
+      return { name, version, parsedURL, registry, relativePath };
     }
     if (xOrStd === "std") {
       const { version } = parseModule(tmpSplit[3]);
       tmpSplit[3] = `std@${versionSubstitute}`;
       const parsedURL = tmpSplit.join("/");
       const registry = "deno.land/std";
-      const name = tmpSplit[4];
-      return { name, version, parsedURL, registry };
+      const name = "std";
+      const relativePath = tmpSplit.slice(4).join("/")
+      return { name, version, parsedURL, registry, relativePath };
     }
     throw new Error(`Unable to parse deno.land url: ${tmpSplit.join("/")}`);
   }
 }
+
+console.log(Deno.parseURL("https://deno.land/std@[VERSION]/[...].ts"))
+console.log(Deno.parseURL("https://deno.land/x/[NAME]@[VERSION]/[...].ts"))
 
 type Registry = {
   [key: string]: {

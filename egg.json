@@ -1,7 +1,7 @@
 {
   "name": "hatcher",
-  "description": "Utility module to handle global updates",
-  "version": "0.7.3",
+  "description": "Utility module to handle module updates",
+  "version": "0.8.0",
   "unlisted": true,
   "stable": true,
   "files": [

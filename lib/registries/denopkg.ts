@@ -18,9 +18,10 @@ export class Denopkg {
   static parseURL(url: string) {
     const tmpSplit = url.split("/");
     const { name, version } = parseModule(tmpSplit[4]);
-    tmpSplit[5] = versionSubstitute;
+    tmpSplit[4] = `${name}@${versionSubstitute}`;
     const parsedURL = tmpSplit.join("/");
     const owner = tmpSplit[3];
-    return { name, version, parsedURL, owner };
+    const relativePath = tmpSplit.slice(5).join("/")
+    return { name, version, parsedURL, owner, relativePath };
   }
 }

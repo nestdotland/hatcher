@@ -40,7 +40,8 @@ export class Github {
     tmpSplit[5] = versionSubstitute;
     const parsedURL = tmpSplit.join("/");
     const owner = tmpSplit[3];
-    return { name, version, parsedURL, owner };
+    const relativePath = tmpSplit.slice(6).join("/")
+    return { name, version, parsedURL, owner, relativePath };
   }
 }
 
