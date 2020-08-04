@@ -6,7 +6,7 @@ import {
   latest,
 } from "../utils.ts";
 
-export class Nest {
+export class NestLand {
   static async fetchModuleData(module: string) {
     const res = await fetchTimeout(
       "https://x.nest.land/api/package/" + module,
@@ -40,6 +40,7 @@ export class Nest {
     const { name, version } = parseModule(tmpSplit[3]);
     tmpSplit[3] = `${name}@${versionSubstitute}`;
     const parsedURL = tmpSplit.join("/");
-    return { name, version, parsedURL };
+    const relativePath = tmpSplit.slice(4).join("/");
+    return { name, version, parsedURL, relativePath };
   }
 }
