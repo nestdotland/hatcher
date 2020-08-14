@@ -30,11 +30,11 @@ Deno.test("Registries | DenoLand | Parse deno.land/x URL", () => {
 Deno.test("Registries | DenoLand | Get latest std version", async () => {
   const latest = await DenoLand.getLatestVersion("std");
 
-  assert(semver.gte("0.63.0", latest));
+  assert(semver.lte("0.65.0", latest));
 });
 
 Deno.test("Registries | DenoLand | Get latest x version", async () => {
   const latest = await DenoLand.getLatestVersion("deno");
 
-  assert(semver.gte("1.2.2", latest));
+  assert(semver.lte("1.3.0", latest));
 });

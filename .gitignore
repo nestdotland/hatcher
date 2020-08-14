@@ -1,1 +1,3 @@
 git-ignore*
+.vscode
+eggs-debug.log

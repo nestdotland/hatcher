@@ -17,5 +17,5 @@ Deno.test("Registries | NestLand | Parse x.nest.land URL", () => {
 Deno.test("Registries | NestLand | Get latest version", async () => {
   const latest = await NestLand.getLatestVersion("std");
 
-  assert(semver.gte("0.63.0", latest));
+  assert(semver.lte("0.65.0", latest));
 });
