@@ -14,6 +14,19 @@ Deno.test("Registries | NestLand | Parse x.nest.land URL", () => {
   });
 });
 
+Deno.test("Registries | NestLand | Parse unversioned x.nest.land URL", () => {
+  const module = NestLand.parseURL(
+    "https://x.nest.land/[NAME]/[.../...].ts",
+  );
+
+  assertEquals(module, {
+    name: "[NAME]",
+    version: "",
+    parsedURL: "https://x.nest.land/[NAME]@${version}/[.../...].ts",
+    relativePath: "[.../...].ts",
+  });
+});
+
 Deno.test("Registries | NestLand | Get latest version", async () => {
   const latest = await NestLand.getLatestVersion("std");
 
