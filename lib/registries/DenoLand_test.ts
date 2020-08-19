@@ -27,6 +27,32 @@ Deno.test("Registries | DenoLand | Parse deno.land/x URL", () => {
   });
 });
 
+Deno.test("Registries | DenoLand | Parse unversioned deno.land/std URL", () => {
+  const module = DenoLand.parseURL(
+    "https://deno.land/std/[.../...].ts",
+  );
+
+  assertEquals(module, {
+    name: "std",
+    version: "",
+    parsedURL: "https://deno.land/std@${version}/[.../...].ts",
+    relativePath: "[.../...].ts",
+  });
+});
+
+Deno.test("Registries | DenoLand | Parse unversioned deno.land/x URL", () => {
+  const module = DenoLand.parseURL(
+    "https://deno.land/x/[NAME]/[.../...].ts",
+  );
+
+  assertEquals(module, {
+    name: "[NAME]",
+    version: "",
+    parsedURL: "https://deno.land/x/[NAME]@${version}/[.../...].ts",
+    relativePath: "[.../...].ts",
+  });
+});
+
 Deno.test("Registries | DenoLand | Get latest std version", async () => {
   const latest = await DenoLand.getLatestVersion("std");
 

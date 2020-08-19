@@ -4,7 +4,7 @@ export const versionSubstitute = "${version}";
 
 export function parseModule(text: string) {
   const tmpSplit = text.split("@");
-  return { name: tmpSplit[0], version: tmpSplit[1] };
+  return { name: tmpSplit[0], version: tmpSplit[1] || "" };
 }
 
 export function fetchTimeout(url: string | Request | URL, ms: number) {
