@@ -1,4 +1,5 @@
-import { path, readJson, writeJson } from "../deps.ts";
+import { path } from "../deps.ts";
+import { readJson, writeJson } from "./utilities/json.ts";
 
 export type GlobalModuleConfig = {
   [key: string]: GlobalModule;
