@@ -8,6 +8,7 @@ Deno.test("Registries | NestLand | Parse x.nest.land URL", () => {
 
   assertEquals(module, {
     name: "[NAME]",
+    owner: "",
     version: "[VERSION]",
     parsedURL: "https://x.nest.land/[NAME]@${version}/[.../...].ts",
     relativePath: "[.../...].ts",
@@ -21,6 +22,7 @@ Deno.test("Registries | NestLand | Parse unversioned x.nest.land URL", () => {
 
   assertEquals(module, {
     name: "[NAME]",
+    owner: "",
     version: "",
     parsedURL: "https://x.nest.land/[NAME]@${version}/[.../...].ts",
     relativePath: "[.../...].ts",

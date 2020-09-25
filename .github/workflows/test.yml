@@ -25,8 +25,24 @@ jobs:
       - name: Setup Deno
         uses: denolib/setup-deno@v2
 
+      - name: Setup Drake
+        run: deno run -A Drakefile.ts setup-github-actions
+
+      - name: Setup Eggs
+        run: drake install-eggs
+
       - name: Run tests
-        run: deno test -A --unstable
+        run: drake test
+
+      - name: Eggs release test
+        run: drake dry-ship
+      
+      - name: Upload debug file
+        uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: eggs-debug
+          path: eggs-debug.log
 
   nightly:
     name: Deno Nightly
@@ -48,5 +64,21 @@ jobs:
         with:
           deno-version: nightly
 
+      - name: Setup Drake
+        run: deno run -A Drakefile.ts setup-github-actions
+
+      - name: Setup Eggs
+        run: drake install-eggs
+
       - name: Run tests
-        run: deno test -A --unstable
+        run: drake test
+
+      - name: Eggs release test
+        run: drake dry-ship
+      
+      - name: Upload debug file
+        uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: eggs-debug
+          path: eggs-debug.log

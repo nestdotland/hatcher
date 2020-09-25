@@ -1,12 +1,15 @@
+import { Registry } from "./Registry.ts";
 import {
   fetchTimeout,
   parseModule,
   versionSubstitute,
   sortVersions,
   latest,
-} from "../utils.ts";
+} from "../utilities/utils.ts";
 
-export class NestLand {
+export class NestLand extends Registry {
+  static domain = "x.nest.land";
+
   static async fetchModuleData(module: string) {
     const res = await fetchTimeout(
       "https://x.nest.land/api/package/" + module,
@@ -16,7 +19,10 @@ export class NestLand {
   }
 
   /** Get the latest release version of a package on https://x.nest.land */
-  static async getLatestVersion(module: string): Promise<string> {
+  static async getLatestVersion(
+    module: string,
+    owner?: string,
+  ): Promise<string> {
     const json = await this.fetchModuleData(module);
     // FIXME(api): json.latestVersion is the latest in date but not the most up-to-date
     const versions = json.packageUploadNames.map((module: string) =>
@@ -41,6 +47,7 @@ export class NestLand {
     tmpSplit[3] = `${name}@${versionSubstitute}`;
     const parsedURL = tmpSplit.join("/");
     const relativePath = tmpSplit.slice(4).join("/");
-    return { name, version, parsedURL, relativePath };
+    const owner = "";
+    return { name, version, parsedURL, relativePath, owner };
   }
 }

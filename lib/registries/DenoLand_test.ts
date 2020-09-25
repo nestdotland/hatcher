@@ -8,6 +8,7 @@ Deno.test("Registries | DenoLand | Parse deno.land/std URL", () => {
 
   assertEquals(module, {
     name: "std",
+    owner: "",
     version: "[VERSION]",
     parsedURL: "https://deno.land/std@${version}/[.../...].ts",
     relativePath: "[.../...].ts",
@@ -21,6 +22,7 @@ Deno.test("Registries | DenoLand | Parse deno.land/x URL", () => {
 
   assertEquals(module, {
     name: "[NAME]",
+    owner: "",
     version: "[VERSION]",
     parsedURL: "https://deno.land/x/[NAME]@${version}/[.../...].ts",
     relativePath: "[.../...].ts",
@@ -34,6 +36,7 @@ Deno.test("Registries | DenoLand | Parse unversioned deno.land/std URL", () => {
 
   assertEquals(module, {
     name: "std",
+    owner: "",
     version: "",
     parsedURL: "https://deno.land/std@${version}/[.../...].ts",
     relativePath: "[.../...].ts",
@@ -47,6 +50,7 @@ Deno.test("Registries | DenoLand | Parse unversioned deno.land/x URL", () => {
 
   assertEquals(module, {
     name: "[NAME]",
+    owner: "",
     version: "",
     parsedURL: "https://deno.land/x/[NAME]@${version}/[.../...].ts",
     relativePath: "[.../...].ts",

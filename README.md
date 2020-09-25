@@ -1,35 +1,248 @@
-# Hatcher (eggs update handler)
+<br />
+<p align="center">
+  <a href="https://github.com/nestdotland/nest.land">
+    <img
+       src="https://raw.githubusercontent.com/nestdotland/nest.land/master/public/images/nest.land/logo_light.svg"
+       alt="logo"
+       width="110"
+    >
+  </a>
 
-Internal module to help eggs handle global updates
+  <h3 align="center">Hatcher</h3>
+<p align="center">
+    Registries toolbox & update notifications for your CLI
+  </p>
+  <p align="center">
+    <a href="https://nest.land/package/hatcher">
+      <img src="https://nest.land/badge.svg" alt="nest.land badge">
+    </a>
+    <img
+      src="https://github.com/nestdotland/hatcher/workflows/Lint/badge.svg"
+      alt="Eggs lint"
+    >
+    <img
+      src="https://github.com/nestdotland/hatcher/workflows/Test/badge.svg"
+      alt="Eggs test"
+    >
+    <img
+      src="https://github.com/nestdotland/hatcher/workflows/Ship/badge.svg"
+      alt="Eggs ship"
+    >
+    <img
+      src="https://img.shields.io/discord/722823139960291328?label=Discord&logo=discord"
+      alt="Discord"
+    >
+  </p>
+</p>
 
-**Should only be installed manually for testing**
+![notification](./img/notification.png)
+
+# Contents
+
+- [Contents](#contents)
+- [Usage](#usage)
+  - [Update Notifier](#update-notifier)
+    - [Simple](#simple)
+    - [Comprehensive](#comprehensive)
+  - [Installation](#installation)
+  - [List Of Commands](#list-of-commands)
+    - [Link](#link)
+    - [Init](#init)
+    - [Publish](#publish)
+    - [Update](#update)
+    - [Install](#install)
+    - [Upgrade](#upgrade)
+  - [Contributing](#contributing)
 
 # Usage
 
-## Module
+## Update Notifier
+
+### Simple
 
 ```ts
-import * from "https://x.nest.land/hatcher@0.8.2/mod.ts"
-import * from "https://x.nest.land/hatcher@0.8.2/lib/registries.ts"
+import { UpdateNotifier, NestLand } from "https://x.nest.land/hatcher@0.9.0/mod.ts";
 
-/** Install update handler cli to check for updates and notify user */
-function installUpdateHandler(moduleName: string, execName: string, updateCheckInterval?: number): Promise<void>
-/** Gets latest version from supported registries */
-function getLatestVersion(registry: string, moduleName?: string, owner?: string): Promise<string>
-/** Analyzes an URL from supported registries */
-function analyzeURL(url: string): {
-    moduleName: string;
-    version: string;
-    versionURL: string;
-    registry: string;
-    owner: string;
-}
+const notifier = new UpdateNotifier({
+  name: "denon",
+  registry: NestLand,
+  currentVersion: "0.1.2",
+});
 
-/** ... */
+await notifier.checkForUpdates();
+notifier.notify();
 ```
 
-## CLI
+### Comprehensive
 
-```bash
-deno run https://x.nest.land/hatcher@0.8.2/cli.ts <MODULE> <UPDATE_CHECK_INTERVAL> [ARGS...]
+```ts
+import { UpdateNotifier, Github } from "https://x.nest.land/hatcher@0.9.0/mod.ts";
+
+const notifier = new UpdateNotifier({
+  name: "denon", // module name
+  owner: "denosaurs", // module owner, mandatory for registries like github
+  registry: Github, // registry object
+  currentVersion: "0.1.2",
+  updateCheckInterval: 1000 * 60 * 60, // time interval between two checks, in milliseconds
+});
+
+const update = await notifier.checkForUpdates(); // true if an update is available
+
+notifier.notify("my command"); // displays the default notification with a custom command
 ```
+
+## Installation
+
+**Note: You need to upgrade to Deno v1.4.1 or newer in order to use our CLI.**
+
+```shell script
+deno install -Afq --unstable https://x.nest.land/eggs@0.3.0/eggs.ts
+```
+
+For more information, see the [documentation](https://docs.nest.land/).
+
+## List Of Commands
+
+### Link
+
+Before publishing a package to our registry, you'll need to get an API key.
+Visit [nest.land](https://nest.land/#start) to generate one.
+
+Then, use `link` to add it to the CLI:
+
+```shell script
+eggs link <key>
+```
+
+Alternatively, you can manually create a `.nest-api-key` file at your user
+home directory.
+
+### Init
+
+To publish a package, you need to create an `egg.json` file at the root of your
+project as well. To do this easily, type:
+
+```shell script
+eggs init
+```
+
+Note: If you'd like to specify a version that you'll publish to, you can
+include a `version` variable in `egg.json`.
+
+### Publish
+
+After you've filled in the information located in `egg.json`, you can publish
+your package to our registry with this command:
+
+```shell script
+eggs publish
+```
+
+You'll receive a link to your package on our registry, along with an import
+URL for others to import your package from the Arweave blockchain!
+
+Note: It may take some time for the transaction to process in Arweave.
+Until then, we upload your files to our server, where they are served for
+20 minutes to give the transaction time to process.
+
+### Update
+
+You can easily update your dependencies and global scripts with
+the `update` command.
+
+```shell script
+eggs update [deps] <options>
+```
+
+Your dependencies are by default checked in the `deps.ts` file 
+(current working directory). You can change this with `--file`
+
+```shell script
+eggs update # default to deps.ts
+eggs update --file dependencies.ts
+```
+
+In regular mode, all your dependencies are updated. You can choose which
+ones will be modified by adding them as arguments.
+
+```shell script
+eggs update # Updates everything
+eggs update http fs eggs # Updates only http, fs, eggs
+```
+
+Scripts installed with `eggs install` can also be updated with the `-g` 
+parameter.
+
+```shell script
+eggs update -g # Updates every script installed with eggs install
+eggs update eggs denon -g # Updates only eggs, denon
+```
+
+Several registries are supported. The current ones are:
+
+* x.nest.land
+* deno.land/x
+* deno.land/std
+* raw.githubusercontent.com
+* denopkg.com
+
+If you want to add a registry, open an issue by specifying the registry 
+url and we'll add it.
+
+An example of updated file:
+
+```ts
+import * as colors from "https://deno.land/std@v0.55.0/fmt/colors.ts";
+import * as bcrypt from "https://deno.land/x/bcrypt@v0.2.0/mod.ts"
+import * as eggs from "https://x.nest.land/eggs@v0.1.0/mod.ts"
+import * as http from "https://deno.land/std/http/mod.ts"
+```
+
+After `eggs update`:
+
+```ts
+import * as colors from "https://deno.land/std@0.58.0/fmt/colors.ts";
+import * as bcrypt from "https://deno.land/x/bcrypt@v0.2.1/mod.ts"
+import * as eggs from "https://x.nest.land/eggs@0.3.0/mod.ts"
+import * as http from "https://deno.land/std/http/mod.ts"
+```
+
+### Install
+
+Just like `deno install`, you can install scripts globally with eggs. 
+By installing it this way, you will be notified if an update is available 
+for your script.
+
+The verification is smart, it can't be done more than once a day. To install 
+a script, simply replace `deno` with `eggs`.
+
+```shell script
+deno install --allow-write --allow-read -n [NAME] https://x.nest.land/[MODULE]@[VERSION]/cli.ts
+```
+
+Becomes
+
+```shell script
+eggs install --allow-write --allow-read -n [NAME] https://x.nest.land/[MODULE]@[VERSION]/cli.ts
+```
+
+The supported registries are the same as for the update command.
+
+### Upgrade
+
+To upgrade the eggs CLI, use the command shown:
+
+```shell script
+eggs upgrade
+```
+
+## Contributing
+
+<img alt="GitHub Hacktoberfest combined status" src="https://img.shields.io/github/hacktoberfest/2020/nestdotland/eggs?logo=digitalocean">
+
+All contributions are welcome! If you can think of a command or feature that
+might benefit nest.land, fork this repository and make a pull request from
+your branch with the additions. Make sure to use [Conventional
+Commits](https://www.conventionalcommits.org/en/v1.0.0/)
+
+[Contribution guide](.github/CONTRIBUTING.md)
