@@ -1,11 +1,14 @@
+import { Registry } from "./Registry.ts";
 import {
   fetchTimeout,
   versionSubstitute,
   sortVersions,
   latest,
-} from "../utils.ts";
+} from "../utilities/utils.ts";
 
-export class Github {
+export class Github extends Registry {
+  static domain = "raw.githubusercontent.com";
+
   /** Get the latest release/tag of a GitHub repository */
   static async getLatestVersion(
     module: string,

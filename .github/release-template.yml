@@ -27,13 +27,16 @@ version-resolver:
   default: patch
 
 template: |
-  
   ## CHANGELOG
 
   $CHANGES
-  
-  ## Import
-  
-  ```js
-  import * as hatcher from "https://x.nest.land/hatcher@$RESOLVED_VERSION/mod.ts"
+
+  ### Install / Upgrade
+
+  **Using Deno**
+
+  ```sh
+  deno install -Afq https://x.nest.land/hatcher@$RESOLVED_VERSION/hatcher.ts
   ```
+
+  Special thanks to $CONTRIBUTORS for their contributions to this release!

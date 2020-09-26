@@ -14,17 +14,21 @@ jobs:
 
       - name: Setup Deno
         uses: denolib/setup-deno@v2
-        with:
-          deno-version: v1.3.3
 
-      - name: Publish hatcher
-        run: |
-          deno run -A --unstable https://x.nest.land/eggs@0.2.1/mod.ts link ${{ secrets.NESTAPIKEY }}
-          deno run -A --unstable https://x.nest.land/eggs@0.2.1/mod.ts publish
+      - name: Setup Drake
+        run: deno run -A Drakefile.ts setup-github-actions
+
+      - name: Get hatcher version
+        run: drake get-version
 
       - name: Draft release
+        id: draft_release
         uses: release-drafter/release-drafter@v5
         with:
           config-name: release-template.yml
+          version: ${{ env.HATCHER_VERSION }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish hatcher
+        run: drake ship

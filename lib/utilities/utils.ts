@@ -1,6 +1,7 @@
-import { semver, Table, Cell } from "../deps.ts";
+import { semver } from "../../deps.ts";
 
 export const versionSubstitute = "${version}";
+export const installPrefix = "hatcher--";
 
 export function parseModule(text: string) {
   const tmpSplit = text.split("@");
@@ -23,13 +24,4 @@ export function sortVersions(list: Array<string | semver.SemVer | null>) {
 
 export function latest<T>(list: T[]) {
   return list[list.length - 1];
-}
-
-export function box(text: string) {
-  new Table()
-    .header([Cell.from("").border(false)])
-    .body([[text]])
-    .indent(2)
-    .border(true)
-    .render();
 }

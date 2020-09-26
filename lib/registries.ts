@@ -1,57 +1,56 @@
+import type { URLData } from "./registries/Registry.ts";
 import { DenoLand } from "./registries/DenoLand.ts";
 import { Denopkg } from "./registries/Denopkg.ts";
 import { Github } from "./registries/Github.ts";
 import { NestLand } from "./registries/NestLand.ts";
+import type { Registry } from "./registries/Registry.ts";
 
-interface IURLdata {
-  name: string;
-  version: string;
-  parsedURL: string;
+export interface ProcessedURL extends URLData {
   registry: string;
-  owner: string;
-  relativePath: string;
+}
+
+export const registries: typeof Registry[] = [
+  DenoLand,
+  Denopkg,
+  Github,
+  NestLand,
+];
+
+/** Get registry object from web domain */
+export function getRegistry(registryName: string) {
+  for (const registry of registries) {
+    if (registryName === registry.domain) {
+      return registry;
+    }
+  }
+  throw new Error(`Unsupported registry: ${registryName}`);
 }
 
 /** Get latest version from supported registries */
 export async function getLatestVersion(
-  registry: string,
-  module = "",
-  owner = "",
+  registryName: string,
+  module: string,
+  owner = "_",
 ): Promise<string> {
-  switch (registry) {
-    case "x.nest.land":
-      return NestLand.getLatestVersion(module);
-
-    case "deno.land":
-      return DenoLand.getLatestVersion(module);
-
-    case "raw.githubusercontent.com":
-    case "denopkg.com":
-      return Github.getLatestVersion(module, owner);
-
-    default:
-      throw new Error(`Unsupported registry: ${registry}`);
+  for (const registry of registries) {
+    if (registryName === registry.domain) {
+      return registry.getLatestVersion(module, owner);
+    }
   }
+  throw new Error(`Unsupported registry: ${registryName}`);
 }
 
 /** Parse an URL from supported registries */
-export function parseURL(url: string): IURLdata {
-  let registry = url.split("/")[2];
+export function parseURL(url: string): ProcessedURL {
+  const registryName = url.split("/")[2];
 
-  switch (registry) {
-    case "x.nest.land":
-      return { registry, owner: "", ...NestLand.parseURL(url) };
-
-    case "deno.land":
-      return { registry, owner: "", ...DenoLand.parseURL(url) };
-
-    case "raw.githubusercontent.com":
-      return { registry, ...Github.parseURL(url) };
-
-    case "denopkg.com":
-      return { registry, ...Denopkg.parseURL(url) };
-
-    default:
-      throw new Error(`Unsupported registry: ${registry}`);
+  for (const registry of registries) {
+    if (registryName === registry.domain) {
+      return {
+        registry: registryName,
+        ...registry.parseURL(url),
+      };
+    }
   }
+  throw new Error(`Unsupported registry: ${registryName}`);
 }

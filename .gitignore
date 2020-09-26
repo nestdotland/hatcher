@@ -1,3 +1,11 @@
-git-ignore*
-.vscode
+# Editors files
+.idea/
+.vscode/
+
+# Nest.land - eggs
+nestkey.json
 eggs-debug.log
+
+# Benchmarks
+benchmarks/**
+!benchmarks/README.md
