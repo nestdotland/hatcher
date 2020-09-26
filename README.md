@@ -2,7 +2,7 @@
 <p align="center">
   <a href="https://github.com/nestdotland/nest.land">
     <img
-       src="./img/hatcher_light_bck.svg"
+       src="https://raw.githubusercontent.com/nestdotland/hatcher/master/img/hatcher_light_bck.svg"
        alt="logo"
        width="110"
     >
@@ -28,10 +28,12 @@
       src="https://github.com/nestdotland/hatcher/workflows/Ship/badge.svg"
       alt="Eggs ship"
     >
-    <img
-      src="https://img.shields.io/discord/722823139960291328?label=Discord&logo=discord"
-      alt="Discord"
-    >
+    <a href="https://discord.gg/hYUsX3H">
+      <img
+        src="https://img.shields.io/discord/722823139960291328?label=Discord&logo=discord"
+        alt="Discord"
+      >
+    </a>
   </p>
 </p>
 
