@@ -2,7 +2,7 @@
 <p align="center">
   <a href="https://github.com/nestdotland/nest.land">
     <img
-       src="./img/logo.svg"
+       src="./img/hatcher_light_bck.svg"
        alt="logo"
        width="110"
     >
