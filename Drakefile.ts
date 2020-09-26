@@ -51,7 +51,7 @@ task("dry-publish", [], async function () {
   );
 });
 
-desc("Publishes eggs to the nest.land registry.");
+desc("Publishes hatcher to the nest.land registry.");
 task("publish", [], async function () {
   await sh(
     `eggs publish hatcher -do --no-check-all --check-installation --version ${version} --description "Registries toolbox & update notifications for your CLI" --repository "https://github.com/nestdotland/hatcher"`,
@@ -61,11 +61,11 @@ task("publish", [], async function () {
 desc("Reports the details of what would have been shipped.");
 task("dry-ship", ["link", "dry-publish"]);
 
-desc("Ship eggs to nest.land.");
+desc("Ship hatcher to nest.land.");
 task("ship", ["link", "publish"]);
 
 task("get-version", [], function () {
-  console.log(`Eggs version: ${version}`);
+  console.log(`Hatcher version: ${version}`);
   console.log(`::set-env name=HATCHER_VERSION::${version}`);
 });
 
