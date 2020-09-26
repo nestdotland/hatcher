@@ -90,8 +90,6 @@ task("setup-github-actions", [], async function () {
     default:
       break;
   }
-
-  console.log("::set-env name=NESTAPIKEY::${{ secrets.NESTAPIKEY }}");
 });
 
 desc("Development tools. Should ideally be run before each commit.");
