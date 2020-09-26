@@ -47,14 +47,14 @@ task("link", [], async function () {
 desc("Reports the details of what would have been published.");
 task("dry-publish", [], async function () {
   await sh(
-    `eggs publish hatcher -do --no-check-all --check-installation --version ${version}-dev --dry-run --description "Registries toolbox & update notifications for your CLI"`,
+    `eggs publish hatcher -do --no-check-all --check-installation --version ${version}-dev --dry-run --description "Registries toolbox & update notifications for your CLI" --repository "https://github.com/nestdotland/hatcher"`,
   );
 });
 
 desc("Publishes eggs to the nest.land registry.");
 task("publish", [], async function () {
   await sh(
-    `eggs publish hatcher -do --no-check-all --check-installation --version ${version} --description "Registries toolbox & update notifications for your CLI"`,
+    `eggs publish hatcher -do --no-check-all --check-installation --version ${version} --description "Registries toolbox & update notifications for your CLI" --repository "https://github.com/nestdotland/hatcher"`,
   );
 });
 
