@@ -37,6 +37,8 @@
 
 ![notification](./img/notification.png)
 
+> Inspired by the node package [update-notifier](https://github.com/yeoman/update-notifier).
+
 # Contents
 
 - [Contents](#contents)
@@ -44,15 +46,32 @@
   - [Update Notifier](#update-notifier)
     - [Simple](#simple)
     - [Comprehensive](#comprehensive)
-  - [Installation](#installation)
-  - [List Of Commands](#list-of-commands)
-    - [Link](#link)
-    - [Init](#init)
-    - [Publish](#publish)
-    - [Update](#update)
-    - [Install](#install)
-    - [Upgrade](#upgrade)
-  - [Contributing](#contributing)
+    - [Adding update notification to any CLI](#adding-update-notification-to-any-cli)
+    - [How](#how)
+  - [Registries toolbox](#registries-toolbox)
+- [API](#api)
+  - [notifier = UpdateNotifier({ name, owner, registry, currentVersion, updateCheckInterval})](#notifier--updatenotifier-name-owner-registry-currentversion-updatecheckinterval)
+    - [name](#name)
+    - [owner](#owner)
+    - [registry](#registry)
+    - [currentVersion](#currentversion)
+    - [updateCheckInterval](#updatecheckinterval)
+  - [notifier.checkForUpdates(configDir)](#notifiercheckforupdatesconfigdir)
+  - [notifier.notify(command, overwrite)](#notifiernotifycommand-overwrite)
+    - [command](#command)
+    - [overwrite](#overwrite)
+    - [Custom message](#custom-message)
+  - [Update](#update)
+  - [Registry Class](#registry-class)
+  - [getLatestVersion(registryName, module, owner)](#getlatestversionregistryname-module-owner)
+    - [registryName](#registryname)
+    - [module](#module)
+    - [owner](#owner-1)
+    - [return type](#return-type)
+  - [parseURL(url)](#parseurlurl)
+    - [url](#url)
+    - [return type](#return-type-1)
+- [Contributing](#contributing)
 
 # Usage
 
@@ -86,157 +105,235 @@ const notifier = new UpdateNotifier({
   updateCheckInterval: 1000 * 60 * 60, // time interval between two checks, in milliseconds
 });
 
-const update = await notifier.checkForUpdates(); // true if an update is available
+const update = await notifier.checkForUpdates(); // undefined if there is no update available
+console.log(update)
+/** {
+  current: "0.1.2",
+  latest: "2.4.0",
+  type: "major",
+  name: "denon",
+  owner: "denosaurs",
+  registry: "raw.githubusercontent.com"
+} */
 
 notifier.notify("my command"); // displays the default notification with a custom command
 ```
 
-## Installation
+![comprehensive](img/comprehensive.png)
 
-**Note: You need to upgrade to Deno v1.4.1 or newer in order to use our CLI.**
+### Adding update notification to any CLI
 
-```shell script
-deno install -Afq --unstable https://x.nest.land/eggs@0.3.0/eggs.ts
+Suppose denon does not use hatcher to notify its users of updates.
+
+**You can install denon with hatcher built-in !**
+
+If the install command is :
+```sh
+deno install --allow-read --allow-run --allow-write --allow-net -f -q --unstable https://deno.land/x/denon@2.4.0/denon.ts
+```
+You can do:
+```sh
+deno install -A https://x.nest.land/hatcher@0.9.0/hatcher.ts
+hatcher --allow-read --allow-run --allow-write --allow-net -f -q --unstable https://deno.land/x/denon@2.4.0/denon.ts
+```
+And voila ! You will be notified as soon as an update is available.
+
+### How 
+
+Whenever you initiate the update notifier and it's not within the interval threshold,
+it will asynchronously check with the specified registry for available updates, then persist the result.
+This prevents any impact on your module startup performance.
+
+The first time the user runs your app, it will check for an update, and even if an update is available,
+it will wait the specified updateCheckInterval before notifying the user (one day by default).
+This is done to not be annoying to the user, but might surprise you as an implementer if you're testing whether it works.
+Check out example.ts to quickly test out hatcher and see how you can test that it works in your app.
+
+```sh
+deno run -A https://x.nest.land/hatcher@0.9.0/example.ts
 ```
 
-For more information, see the [documentation](https://docs.nest.land/).
-
-## List Of Commands
-
-### Link
-
-Before publishing a package to our registry, you'll need to get an API key.
-Visit [nest.land](https://nest.land/#start) to generate one.
-
-Then, use `link` to add it to the CLI:
-
-```shell script
-eggs link <key>
-```
-
-Alternatively, you can manually create a `.nest-api-key` file at your user
-home directory.
-
-### Init
-
-To publish a package, you need to create an `egg.json` file at the root of your
-project as well. To do this easily, type:
-
-```shell script
-eggs init
-```
-
-Note: If you'd like to specify a version that you'll publish to, you can
-include a `version` variable in `egg.json`.
-
-### Publish
-
-After you've filled in the information located in `egg.json`, you can publish
-your package to our registry with this command:
-
-```shell script
-eggs publish
-```
-
-You'll receive a link to your package on our registry, along with an import
-URL for others to import your package from the Arweave blockchain!
-
-Note: It may take some time for the transaction to process in Arweave.
-Until then, we upload your files to our server, where they are served for
-20 minutes to give the transaction time to process.
-
-### Update
-
-You can easily update your dependencies and global scripts with
-the `update` command.
-
-```shell script
-eggs update [deps] <options>
-```
-
-Your dependencies are by default checked in the `deps.ts` file 
-(current working directory). You can change this with `--file`
-
-```shell script
-eggs update # default to deps.ts
-eggs update --file dependencies.ts
-```
-
-In regular mode, all your dependencies are updated. You can choose which
-ones will be modified by adding them as arguments.
-
-```shell script
-eggs update # Updates everything
-eggs update http fs eggs # Updates only http, fs, eggs
-```
-
-Scripts installed with `eggs install` can also be updated with the `-g` 
-parameter.
-
-```shell script
-eggs update -g # Updates every script installed with eggs install
-eggs update eggs denon -g # Updates only eggs, denon
-```
-
-Several registries are supported. The current ones are:
-
-* x.nest.land
-* deno.land/x
-* deno.land/std
-* raw.githubusercontent.com
-* denopkg.com
-
-If you want to add a registry, open an issue by specifying the registry 
-url and we'll add it.
-
-An example of updated file:
+## Registries toolbox
 
 ```ts
-import * as colors from "https://deno.land/std@v0.55.0/fmt/colors.ts";
-import * as bcrypt from "https://deno.land/x/bcrypt@v0.2.0/mod.ts"
-import * as eggs from "https://x.nest.land/eggs@v0.1.0/mod.ts"
-import * as http from "https://deno.land/std/http/mod.ts"
+import { getLatestVersion, parseURL } from "https://x.nest.land/hatcher@0.9.0/mod.ts";
+
+const result = parseURL("https://deno.land/x/denon@1.2.0/src/runner.ts");
+/** {
+  registry: "deno.land",
+  name: "denon",
+  version: "1.2.0",
+  parsedURL: "https://deno.land/x/denon@${version}/src/runner.ts",
+  relativePath: "src/runner.ts",
+  owner: ""
+} */
+
+const latestVersion = await getLatestVersion("deno.land", "denon");
+console.log(latestVersion); // 0.2.4
 ```
 
-After `eggs update`:
+# API
+
+## notifier = UpdateNotifier({ name, owner, registry, currentVersion, updateCheckInterval})
+
+### name
+_required_
+
+type: `string`
+
+### owner
+_required for raw.githubusercontent.com, denopkg.com_
+
+type: `string`
+
+### registry
+_required_
+
+type: [`Registry`](#registry-class)
+
+### currentVersion
+_required_
+
+type: `string | semver.SemVer`
+
+### updateCheckInterval
+In milliseconds, defaults to one day.
+
+type: `number`
+
+## notifier.checkForUpdates(configDir)
+`configDir` is the directory where hatcher will save some information about your module.
+
+Defaults to `~/.deno/hatcher`
+
+Returns an [`Update`](#update) object if there is an update available, `undefined` otherwise.
+
+## notifier.notify(command, overwrite)
+
+By default, will ask the user to visit the registry.
 
 ```ts
-import * as colors from "https://deno.land/std@0.58.0/fmt/colors.ts";
-import * as bcrypt from "https://deno.land/x/bcrypt@v0.2.1/mod.ts"
-import * as eggs from "https://x.nest.land/eggs@0.3.0/mod.ts"
-import * as http from "https://deno.land/std/http/mod.ts"
+notifier.notify();
 ```
 
-### Install
+![default](img/default.png)
 
-Just like `deno install`, you can install scripts globally with eggs. 
-By installing it this way, you will be notified if an update is available 
-for your script.
+### command
 
-The verification is smart, it can't be done more than once a day. To install 
-a script, simply replace `deno` with `eggs`.
+type: `string`
 
-```shell script
-deno install --allow-write --allow-read -n [NAME] https://x.nest.land/[MODULE]@[VERSION]/cli.ts
+```ts
+notifier.notify("my command");
 ```
 
-Becomes
+![command](img/command.png)
 
-```shell script
-eggs install --allow-write --allow-read -n [NAME] https://x.nest.land/[MODULE]@[VERSION]/cli.ts
+### overwrite
+
+type: `boolean`
+
+Will overwrite the body of the notification.
+
+```ts
+notifier.notify("My custom message", true);
 ```
 
-The supported registries are the same as for the update command.
+![overwrite](img/overwrite.png)
 
-### Upgrade
-
-To upgrade the eggs CLI, use the command shown:
-
-```shell script
-eggs upgrade
+### Custom message
+You can of course also display a fully customized message if an [update](#update) is available.
+```ts
+const update = await notifier.checkForUpdates();
+if (update) {
+  console.log(`New update! ${update.latest}`);
+}
 ```
 
-## Contributing
+## Update
+
+```ts
+{
+  latest: string;
+  current: string;
+  type: semver.ReleaseType | null; // "pre" | "major" | "premajor" | "minor" | "preminor" | "patch" | "prepatch" | "prerelease" | null
+  name: string;
+  owner: string;
+  registry: string;
+}
+```
+
+## Registry Class
+Supported registers for the time being:
+
+domain (string) | Registry class
+-----|-----
+`deno.land` | `DenoLand`
+`denopkg.com` | `Denopkg`
+`raw.githubusercontent.com` | `Github`
+`x.nest.land` | `NestLand`
+
+You can add your own registers by adding them to `registries`.
+```ts
+import { registries } from "https://x.nest.land/hatcher@0.9.0/mod.ts";
+
+registries.push(myRegistry)
+```
+
+Your registry must implement the Registry object:
+```ts
+abstract class Registry {
+  static domain: string;
+
+  static async getLatestVersion(module: string, owner: string): Promise<string>;
+  static async getLatestVersion(module: string, owner?: string): Promise<string>;
+  static async getLatestVersion(module: string): Promise<string>
+
+  static parseURL(url: string): URLData
+}
+```
+
+## getLatestVersion(registryName, module, owner)
+
+### registryName
+_required_
+
+type: `string`
+
+One of the [supported registries](#registry-class) domain.
+
+### module
+_required_
+
+type: `string`
+
+### owner
+_required for raw.githubusercontent.com, denopkg.com_
+
+type: `string`
+
+### return type
+type: `string`
+
+## parseURL(url)
+
+### url
+_required_
+
+type: `string`
+
+### return type
+```ts
+interface ProcessedURL {
+  registry: string;
+  name: string;
+  owner: string;
+  version: string;
+  parsedURL: string;
+  relativePath: string;
+}
+```
+
+# Contributing
 
 <img alt="GitHub Hacktoberfest combined status" src="https://img.shields.io/github/hacktoberfest/2020/nestdotland/eggs?logo=digitalocean">
 

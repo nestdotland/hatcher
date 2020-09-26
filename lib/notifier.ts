@@ -4,16 +4,25 @@ import { box } from "./utilities/box.ts";
 import { envHOMEDIR } from "./utilities/environment.ts";
 import { join, exists, semver, colors } from "../deps.ts";
 
-interface ModuleInfo {
+export interface ModuleInfo {
   lastUpdateCheck: number;
 }
 
-interface Options {
+export interface Options {
   name: string;
   registry: typeof Registry;
   currentVersion: string | semver.SemVer;
   owner?: string;
   updateCheckInterval?: number;
+}
+
+export interface Update {
+  latest: string;
+  current: string;
+  type: semver.ReleaseType | null;
+  name: string;
+  owner: string;
+  registry: string;
 }
 
 export const ONE_DAY = 1000 * 60 * 60 * 24;
@@ -22,14 +31,19 @@ export class UpdateNotifier {
   public name: string;
   public registry: typeof Registry;
   public currentVersion: string | semver.SemVer;
-  public owner?: string;
+  public owner: string;
   public updateCheckInterval: number;
   public lastUpdateCheck = Date.now();
-  public availableUpdate = ["", ""];
+  public availableUpdate: Update | undefined = undefined;
 
   constructor(
-    { name, registry, currentVersion, owner, updateCheckInterval = ONE_DAY }:
-      Options,
+    {
+      name,
+      registry,
+      currentVersion,
+      owner = "_",
+      updateCheckInterval = ONE_DAY,
+    }: Options,
   ) {
     this.name = name;
     this.registry = registry;
@@ -40,7 +54,7 @@ export class UpdateNotifier {
 
   async checkForUpdates(
     configDir = join(envHOMEDIR(), ".deno/hatcher/"),
-  ): Promise<boolean> {
+  ): Promise<Update | undefined> {
     if (!await exists(configDir)) {
       await Deno.mkdir(configDir, { recursive: true });
     }
@@ -68,7 +82,8 @@ export class UpdateNotifier {
     }
 
     if (this.needsChecking()) {
-      let latestVersion: string;
+      let latestVersion: string | semver.SemVer;
+      let currentVersion: string | semver.SemVer;
       try {
         latestVersion = await this.registry.getLatestVersion(
           this.name,
@@ -76,21 +91,32 @@ export class UpdateNotifier {
         );
       } catch {
         // user offline
-        return false;
+        return;
       }
 
       if (!latestVersion || !semver.valid(latestVersion)) {
-        return false;
+        return;
       }
 
-      const current = semver.coerce(this.currentVersion) || "0.0.0";
-      const latest = semver.coerce(latestVersion) || "0.0.0";
+      latestVersion = semver.coerce(latestVersion) || "0.0.0";
+      currentVersion = semver.coerce(this.currentVersion) || "0.0.0";
 
-      if (semver.lt(current, latest)) {
-        const from = (typeof current === "string" ? current : current.version);
-        const to = (typeof latest === "string" ? latest : latest.version);
-        this.availableUpdate = [from, to];
-        return true;
+      if (semver.lt(currentVersion, latestVersion)) {
+        const current = (typeof currentVersion === "string"
+          ? currentVersion
+          : currentVersion.version);
+        const latest = (typeof latestVersion === "string"
+          ? latestVersion
+          : latestVersion.version);
+        this.availableUpdate = {
+          current,
+          latest,
+          type: semver.diff(current, latest),
+          name: this.name,
+          owner: this.owner,
+          registry: this.registry.domain,
+        };
+        return this.availableUpdate;
       }
 
       this.lastUpdateCheck = Date.now();
@@ -98,18 +124,18 @@ export class UpdateNotifier {
         lastUpdateCheck: this.lastUpdateCheck,
       });
     }
-    return false;
+    return;
   }
 
-  needsChecking() {
+  needsChecking(): boolean {
     return Date.now() - this.lastUpdateCheck > this.updateCheckInterval;
   }
 
-  notify(command?: string, overwrite = false) {
-    const [from, to] = this.availableUpdate;
-    if (from && to) {
-      const header = `Update available ${colors.gray(from)} → ${
-        colors.green(to)
+  notify(command?: string, overwrite = false): void {
+    const update = this.availableUpdate;
+    if (update) {
+      const header = `Update available ${colors.gray(update.current)} → ${
+        colors.green(update.latest)
       }\n`;
       const body = (command
         ? (overwrite

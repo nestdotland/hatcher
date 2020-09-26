@@ -1,3 +1,3 @@
-import { install } from "./lib/install.ts";
+import { install } from "./lib/cli.ts";
 
 install();

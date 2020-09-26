@@ -30,7 +30,7 @@ export function getRegistry(registryName: string) {
 export async function getLatestVersion(
   registryName: string,
   module: string,
-  owner = "",
+  owner = "_",
 ): Promise<string> {
   for (const registry of registries) {
     if (registryName === registry.domain) {
