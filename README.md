@@ -2,7 +2,7 @@
 <p align="center">
   <a href="https://github.com/nestdotland/nest.land">
     <img
-       src="https://raw.githubusercontent.com/nestdotland/nest.land/master/public/images/nest.land/logo_light.svg"
+       src="./img/logo.svg"
        alt="logo"
        width="110"
     >
@@ -71,6 +71,9 @@
   - [parseURL(url)](#parseurlurl)
     - [url](#url)
     - [return type](#return-type-1)
+  - [getRegistry(registryName)](#getregistryregistryname)
+    - [registryName](#registryname-1)
+    - [return type](#return-type-2)
 - [Contributing](#contributing)
 
 # Usage
@@ -294,6 +297,8 @@ abstract class Registry {
 
 ## getLatestVersion(registryName, module, owner)
 
+Get latest version from supported registries
+
 ### registryName
 _required_
 
@@ -316,6 +321,8 @@ type: `string`
 
 ## parseURL(url)
 
+Parse an URL from supported registries
+
 ### url
 _required_
 
@@ -332,6 +339,19 @@ interface ProcessedURL {
   relativePath: string;
 }
 ```
+
+## getRegistry(registryName)
+
+Get registry object from web domain
+
+### registryName
+_required_
+
+type: `string`
+
+### return type
+
+type: `Registry`
 
 # Contributing
 
