@@ -117,7 +117,7 @@ export class UpdateNotifier {
           registry: this.registry.domain,
         };
       }
-      
+
       this.lastUpdateCheck = Date.now();
       await writeJson(configPath, {
         lastUpdateCheck: this.lastUpdateCheck,
