@@ -85,7 +85,7 @@
 ### Simple
 
 ```ts
-import { UpdateNotifier, NestLand } from "https://x.nest.land/hatcher@0.9.0/mod.ts";
+import { UpdateNotifier, NestLand } from "https://x.nest.land/hatcher@0.9.2/mod.ts";
 
 const notifier = new UpdateNotifier({
   name: "denon",
@@ -100,7 +100,7 @@ notifier.notify();
 ### Comprehensive
 
 ```ts
-import { UpdateNotifier, Github } from "https://x.nest.land/hatcher@0.9.0/mod.ts";
+import { UpdateNotifier, Github } from "https://x.nest.land/hatcher@0.9.2/mod.ts";
 
 const notifier = new UpdateNotifier({
   name: "denon", // module name
@@ -138,7 +138,7 @@ deno install --allow-read --allow-run --allow-write --allow-net -f -q --unstable
 ```
 You can do:
 ```sh
-deno install -A https://x.nest.land/hatcher@0.9.0/hatcher.ts
+deno install -A https://x.nest.land/hatcher@0.9.2/hatcher.ts
 hatcher --allow-read --allow-run --allow-write --allow-net -f -q --unstable https://deno.land/x/denon@2.4.0/denon.ts
 ```
 And voila ! You will be notified as soon as an update is available.
@@ -155,13 +155,13 @@ This is done to not be annoying to the user, but might surprise you as an implem
 Check out example.ts to quickly test out hatcher and see how you can test that it works in your app.
 
 ```sh
-deno run -A https://x.nest.land/hatcher@0.9.0/example.ts
+deno run -A https://x.nest.land/hatcher@0.9.2/example.ts
 ```
 
 ## Registries toolbox
 
 ```ts
-import { getLatestVersion, parseURL } from "https://x.nest.land/hatcher@0.9.0/mod.ts";
+import { getLatestVersion, parseURL } from "https://x.nest.land/hatcher@0.9.2/mod.ts";
 
 const result = parseURL("https://deno.land/x/denon@1.2.0/src/runner.ts");
 /** {
@@ -279,7 +279,7 @@ domain (string) | Registry class
 
 You can add your own registers by adding them to `registries`.
 ```ts
-import { registries } from "https://x.nest.land/hatcher@0.9.0/mod.ts";
+import { registries } from "https://x.nest.land/hatcher@0.9.2/mod.ts";
 
 registries.push(myRegistry)
 ```
