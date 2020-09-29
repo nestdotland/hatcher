@@ -116,13 +116,14 @@ export class UpdateNotifier {
           owner: this.owner,
           registry: this.registry.domain,
         };
-        return this.availableUpdate;
       }
 
       this.lastUpdateCheck = Date.now();
       await writeJson(configPath, {
         lastUpdateCheck: this.lastUpdateCheck,
       });
+
+      return this.availableUpdate;
     }
     return;
   }
