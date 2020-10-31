@@ -1,4 +1,4 @@
-import { getLatestVersion, parseURL } from "./registries.ts";
+import { latestVersion, parseURL } from "./registries.ts";
 import type { ProcessedURL } from "./registries.ts";
 import { installPrefix } from "./utilities/utils.ts";
 import { colors, log, semver } from "../deps.ts";
@@ -34,7 +34,7 @@ export async function install(args = [...Deno.args]) {
   log.debug("Module info: ", name, parsedURL, registry, owner, version);
 
   const currentVersion = semver.valid(version) ??
-    await getLatestVersion(registry, name, owner);
+    await latestVersion(registry, name, owner);
 
   if (!currentVersion || !semver.valid(currentVersion)) {
     log.warning(`Could not find the latest version of ${name}.`);
