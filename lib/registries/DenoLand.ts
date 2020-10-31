@@ -1,27 +1,25 @@
 import { Registry } from "./Registry.ts";
 import {
   fetchTimeout,
-  parseModule,
   latest,
-  versionSubstitute,
+  parseModule,
   sortVersions,
+  versionSubstitute,
 } from "../utilities/utils.ts";
 
 export class DenoLand extends Registry {
   static domain = "deno.land";
 
-  /** Get the latest release version of third party modules */
-  static async getLatestVersion(
+  /** Get the sorted versions of a module on https://deno.land */
+  static async sortedVersions(
     module: string,
     owner?: string,
-  ): Promise<string> {
-    const res = await fetchTimeout(
+  ): Promise<string[]> {
+    const res = await fetch(
       `https://cdn.deno.land/${module}/meta/versions.json`,
-      5000,
     );
     const { versions } = await res.json();
-    const sorted = sortVersions(versions);
-    return latest(sorted);
+    return sortVersions(versions);
   }
 
   /** Analyzes deno.land url

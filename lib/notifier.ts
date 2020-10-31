@@ -2,7 +2,7 @@ import type { Registry } from "./registries/Registry.ts";
 import { readJson, writeJson } from "./utilities/json.ts";
 import { box } from "./utilities/box.ts";
 import { envHOMEDIR } from "./utilities/environment.ts";
-import { join, exists, semver, colors } from "../deps.ts";
+import { colors, exists, join, semver } from "../deps.ts";
 
 export interface ModuleInfo {
   lastUpdateCheck: number;
@@ -82,10 +82,9 @@ export class UpdateNotifier {
     }
 
     if (this.needsChecking()) {
-      let latestVersion: string | semver.SemVer;
-      let currentVersion: string | semver.SemVer;
+      let latestVersion: string | semver.SemVer | undefined;
       try {
-        latestVersion = await this.registry.getLatestVersion(
+        latestVersion = await this.registry.latestVersion(
           this.name,
           this.owner,
         );
@@ -99,7 +98,7 @@ export class UpdateNotifier {
       }
 
       latestVersion = semver.coerce(latestVersion) || "0.0.0";
-      currentVersion = semver.coerce(this.currentVersion) || "0.0.0";
+      const currentVersion = semver.coerce(this.currentVersion) || "0.0.0";
 
       if (semver.lt(currentVersion, latestVersion)) {
         const current = (typeof currentVersion === "string"

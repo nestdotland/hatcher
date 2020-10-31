@@ -15,13 +15,32 @@ export function fetchTimeout(url: string | Request | URL, ms: number) {
   return promise.finally(() => clearTimeout(timeout));
 }
 
-export function sortVersions(list: Array<string | semver.SemVer | null>) {
+export function sortVersions(
+  list: Array<string | semver.SemVer | null>,
+): string[] {
   const valid = list
     .map((version) => semver.valid(version))
     .filter((version) => version !== null);
   return semver.sort(valid as string[]);
 }
 
-export function latest<T>(list: T[]) {
-  return list[list.length - 1];
+export function latest(versions: string[]): string | undefined {
+  return versions[versions.length - 1];
+}
+
+/** Assumes that the versions are already sorted */
+export function latestStable(versions: string[]): string | undefined {
+  for (let i = versions.length - 1; i > -1; i--) {
+    if (isVersionStable(versions[i])) {
+      return versions[i];
+    }
+  }
+}
+
+export function isVersionUnstable(v: string): boolean {
+  return (semver.major(v) === 0) || (!!semver.prerelease(v));
+}
+
+export function isVersionStable(v: string): boolean {
+  return !isVersionUnstable(v);
 }

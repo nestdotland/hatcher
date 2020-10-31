@@ -57,14 +57,12 @@ Deno.test("Registries | DenoLand | Parse unversioned deno.land/x URL", () => {
   });
 });
 
-Deno.test("Registries | DenoLand | Get latest std version", async () => {
-  const latest = await DenoLand.getLatestVersion("std");
-
-  assert(semver.lte("0.65.0", latest));
+Deno.test("Registries | DenoLand | Get sorted std versions", async () => {
+  const sorted = await DenoLand.sortedVersions("std");
+  assert(sorted.length > 0);
 });
 
-Deno.test("Registries | DenoLand | Get latest x version", async () => {
-  const latest = await DenoLand.getLatestVersion("deno");
-
-  assert(semver.lte("1.3.0", latest));
+Deno.test("Registries | DenoLand | Get sorted x versions", async () => {
+  const sorted = await DenoLand.sortedVersions("deno");
+  assert(sorted.length > 0);
 });

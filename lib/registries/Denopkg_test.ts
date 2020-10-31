@@ -15,12 +15,7 @@ Deno.test("Registries | Denopkg | Parse denopkg.com URL", () => {
   });
 });
 
-Deno.test({
-  name: "Registries | Denopkg | Get latest version",
-  ignore: Deno.build.os === "darwin",
-  async fn() {
-    const latest = await Denopkg.getLatestVersion("deno", "denoland");
-
-    assert(semver.lte("1.3.0", latest));
-  },
+Deno.test("Registries | Denopkg | Get sorted versions", async () => {
+  const sorted = await Denopkg.sortedVersions("deno", "denoland");
+  assert(sorted.length > 0);
 });

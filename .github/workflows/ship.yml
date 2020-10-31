@@ -18,6 +18,8 @@ jobs:
 
       - name: Setup Deno
         uses: denolib/setup-deno@v2
+        with:
+          deno-version: v1.4.6
 
       - name: Setup Drake
         run: deno run -A Drakefile.ts setup-github-actions

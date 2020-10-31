@@ -65,17 +65,23 @@
     - [Custom message](#custom-message)
   - [Update](#update)
   - [Registry Class](#registry-class)
-  - [getLatestVersion(registryName, module, owner)](#getlatestversionregistryname-module-owner)
-    - [registryName](#registryname)
+  - [latestVersion(registryDomain, module, owner)](#latestversionregistrydomain-module-owner)
+    - [registryDomain](#registrydomain)
     - [module](#module)
     - [owner](#owner-1)
     - [return type](#return-type)
+  - [latestStableVersion(registryDomain, module, owner)](#lateststableversionregistrydomain-module-owner)
+  - [sortedVersions(registryDomain, module, owner)](#sortedversionsregistrydomain-module-owner)
+    - [registryDomain](#registrydomain-1)
+    - [module](#module-1)
+    - [owner](#owner-2)
+    - [return type](#return-type-1)
   - [parseURL(url)](#parseurlurl)
     - [url](#url)
-    - [return type](#return-type-1)
-  - [getRegistry(registryName)](#getregistryregistryname)
-    - [registryName](#registryname-1)
     - [return type](#return-type-2)
+  - [getRegistry(registryDomain)](#getregistryregistrydomain)
+    - [registryDomain](#registrydomain-2)
+    - [return type](#return-type-3)
 - [Contributing](#contributing)
 
 # Usage
@@ -275,7 +281,9 @@ domain (string) | Registry class
 `deno.land` | `DenoLand`
 `denopkg.com` | `Denopkg`
 `raw.githubusercontent.com` | `Github`
+`jspm.dev` | `Jspm`
 `x.nest.land` | `NestLand`
+`cdn.skypack.dev` | `Skypack`
 
 You can add your own registers by adding them to `registries`.
 ```ts
@@ -289,19 +297,21 @@ Your registry must implement the Registry object:
 abstract class Registry {
   static domain: string;
 
-  static async getLatestVersion(module: string, owner: string): Promise<string>;
-  static async getLatestVersion(module: string, owner?: string): Promise<string>;
-  static async getLatestVersion(module: string): Promise<string>
+  static async latestVersion(module: string, owner?: string): Promise<string | undefined>;
+
+  static async latestStableVersion(module: string, owner?: string): Promise<string | undefined>;
+
+  static async sortedVersions(module: string, owner?: string): Promise<string[]>;
 
   static parseURL(url: string): URLData
 }
 ```
 
-## getLatestVersion(registryName, module, owner)
+## latestVersion(registryDomain, module, owner)
 
 Get latest version from supported registries
 
-### registryName
+### registryDomain
 _required_
 
 type: `string`
@@ -320,6 +330,36 @@ type: `string`
 
 ### return type
 type: `string`
+
+
+## latestStableVersion(registryDomain, module, owner)
+
+Same as `latestVersion` but get the latest stable version according to the SemVer rules.
+
+## sortedVersions(registryDomain, module, owner)
+
+Get sorted versions from supported registries
+
+### registryDomain
+_required_
+
+type: `string`
+
+One of the [supported registries](#registry-class) domain.
+
+### module
+_required_
+
+type: `string`
+
+### owner
+_required for raw.githubusercontent.com, denopkg.com_
+
+type: `string`
+
+### return type
+type: `string[]`
+
 
 ## parseURL(url)
 
@@ -342,11 +382,12 @@ interface ProcessedURL {
 }
 ```
 
-## getRegistry(registryName)
+
+## getRegistry(registryDomain)
 
 Get registry object from web domain
 
-### registryName
+### registryDomain
 _required_
 
 type: `string`

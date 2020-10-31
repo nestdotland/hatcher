@@ -1,10 +1,10 @@
-import { desc, run, task, sh } from "https://x.nest.land/drake@1.4.1/mod.ts";
+import { desc, run, sh, task } from "https://x.nest.land/drake@1.4.4/mod.ts";
 import { version } from "./lib/version.ts";
 
 desc("Install eggs.");
 task("install-eggs", [], async function () {
   await sh(
-    `deno install -A -f --unstable -n eggs https://x.nest.land/eggs@0.2.3/mod.ts`,
+    `deno install -Af --unstable https://x.nest.land/eggs@0.3.1/eggs.ts`,
   );
 });
 
@@ -47,14 +47,14 @@ task("link", [], async function () {
 desc("Reports the details of what would have been published.");
 task("dry-publish", [], async function () {
   await sh(
-    `eggs publish hatcher -do --no-check-all --check-installation --version ${version}-dev --dry-run`,
+    `eggs publish hatcher -doY --no-check --check-installation --version ${version}-dev --dry-run`,
   );
 });
 
 desc("Publishes hatcher to the nest.land registry.");
 task("publish", [], async function () {
   await sh(
-    `eggs publish hatcher -do --no-check-all --check-installation --version ${version}`,
+    `eggs publish hatcher -doY --no-check --check-installation --version ${version}`,
   );
 });
 
