@@ -1,7 +1,7 @@
-import { parseURL, getLatestVersion } from "./registries.ts";
+import { getLatestVersion, parseURL } from "./registries.ts";
 import type { ProcessedURL } from "./registries.ts";
 import { installPrefix } from "./utilities/utils.ts";
-import { semver, colors, log } from "../deps.ts";
+import { colors, log, semver } from "../deps.ts";
 import { version as hatcherVersion } from "./version.ts";
 
 export async function install(args = [...Deno.args]) {

@@ -1,4 +1,4 @@
-import { Table, colors } from "../../deps.ts";
+import { colors, Table } from "../../deps.ts";
 
 const characters = {
   top: "─",

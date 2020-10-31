@@ -1,7 +1,4 @@
-import {
-  UpdateNotifier,
-  Github,
-} from "./mod.ts";
+import { Github, UpdateNotifier } from "./mod.ts";
 
 const notifier = new UpdateNotifier({
   name: "denon",

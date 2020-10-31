@@ -2,9 +2,9 @@
 export * as colors from "https://x.nest.land/std@0.70.0/fmt/colors.ts";
 
 export {
+  assert,
   assertEquals,
   assertMatch,
-  assert,
 } from "https://x.nest.land/std@0.70.0/testing/asserts.ts";
 
 export * as log from "https://x.nest.land/std@0.70.0/log/mod.ts";

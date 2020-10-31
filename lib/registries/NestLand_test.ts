@@ -1,4 +1,4 @@
-import { assert, assertEquals, semver } from "../../deps.ts";
+import { assert, assertEquals } from "../../deps.ts";
 import { NestLand } from "./NestLand.ts";
 
 Deno.test("Registries | NestLand | Parse x.nest.land URL", () => {
@@ -29,8 +29,7 @@ Deno.test("Registries | NestLand | Parse unversioned x.nest.land URL", () => {
   });
 });
 
-Deno.test("Registries | NestLand | Get latest version", async () => {
-  const latest = await NestLand.getLatestVersion("std");
-
-  assert(semver.lte("0.65.0", latest));
+Deno.test("Registries | NestLand | Get sorted versions", async () => {
+  const sorted = await NestLand.sortedVersions("std");
+  assert(sorted.length > 0);
 });

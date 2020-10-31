@@ -1,18 +1,16 @@
 import { Registry } from "./Registry.ts";
-import {
-  versionSubstitute,
-  parseModule,
-} from "../utilities/utils.ts";
+import { parseModule, versionSubstitute } from "../utilities/utils.ts";
 import { Github } from "./Github.ts";
 
 export class Denopkg extends Registry {
   static domain = "denopkg.com";
-  /** Get the latest version of a denopkg module */
-  static async getLatestVersion(
+
+  /** Get the sorted versions of a module on https://denopkg.com */
+  static async sortedVersions(
     module: string,
     owner: string,
-  ): Promise<string> {
-    return Github.getLatestVersion(module, owner);
+  ): Promise<string[]> {
+    return Github.sortedVersions(module, owner);
   }
 
   /** Analyzes denopkg url
