@@ -1,19 +1,19 @@
 import { Registry } from "./Registry.ts";
 import {
   fetchTimeout,
-  versionSubstitute,
-  sortVersions,
   latest,
+  sortVersions,
+  versionSubstitute,
 } from "../utilities/utils.ts";
 
 export class Github extends Registry {
   static domain = "raw.githubusercontent.com";
 
-  /** Get the latest release/tag of a GitHub repository */
-  static async getLatestVersion(
+  /** Get the sorted release/tag of a GitHub repository */
+  static async sortedVersions(
     module: string,
     owner: string,
-  ): Promise<string> {
+  ): Promise<string[]> {
     const res = await fetchTimeout(
       `https://api.github.com/repos/${owner}/${module}/releases`,
       5000,
@@ -25,16 +25,14 @@ export class Github extends Registry {
     const versions: string[] = json.map((release: Release) => release.tag_name);
     const sorted = sortVersions(versions);
     if (sorted.length === 0) {
-      const res = await fetchTimeout(
+      const res = await fetch(
         `https://api.github.com/repos/${owner}/${module}/tags`,
-        5000,
       );
       const json: Tag[] = await res.json();
       const versions: string[] = json.map((tag: Tag) => tag.name);
-      const sorted = sortVersions(versions);
-      return latest(sorted);
+      return sortVersions(versions);
     }
-    return latest(sorted);
+    return sorted;
   }
 
   /** Parse raw.githubusercontent url
@@ -51,10 +49,10 @@ export class Github extends Registry {
   }
 }
 
-type Release = {
+interface Release {
   tag_name: string;
-};
+}
 
-type Tag = {
+interface Tag {
   name: string;
-};
+}

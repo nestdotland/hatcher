@@ -16,12 +16,7 @@ Deno.test("Registries | Github | Parse raw.githubusercontent.com URL", () => {
   });
 });
 
-Deno.test({
-  name: "Registries | Github | Get latest version",
-  ignore: Deno.build.os === "darwin",
-  async fn() {
-    const latest = await Github.getLatestVersion("deno", "denoland");
-
-    assert(semver.lte("1.3.0", latest));
-  },
+Deno.test("Registries | Github | Get sorted versions", async () => {
+  const sorted = await Github.sortedVersions("deno", "denoland");
+  assert(sorted.length > 0);
 });

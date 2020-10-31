@@ -1,3 +1,5 @@
+import { latest, latestStable } from "../utilities/utils.ts";
+
 export interface URLData {
   name: string;
   owner: string;
@@ -9,13 +11,31 @@ export interface URLData {
 export abstract class Registry {
   static domain: string;
 
-  static async getLatestVersion(module: string, owner: string): Promise<string>;
-  static async getLatestVersion(
+  /** Get the latest release version of a module */
+  static async latestVersion(
     module: string,
     owner?: string,
-  ): Promise<string>;
-  static async getLatestVersion(module: string): Promise<string> {
-    return "";
+  ): Promise<string | undefined> {
+    const sorted = await this.sortedVersions(module, owner);
+    return latest(sorted);
+  }
+
+  /** Get the latest stable version of a module */
+  static async latestStableVersion(
+    module: string,
+    owner?: string,
+  ): Promise<string | undefined> {
+    const sorted = await this.sortedVersions(module, owner);
+    return latestStable(sorted);
+  }
+
+  static async sortedVersions(module: string, owner: string): Promise<string[]>;
+  static async sortedVersions(
+    module: string,
+    owner?: string,
+  ): Promise<string[]>;
+  static async sortedVersions(module: string): Promise<string[]> {
+    return [];
   }
 
   static parseURL(url: string): URLData {
