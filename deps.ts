@@ -1,16 +1,16 @@
 /**************** std ****************/
-export * as colors from "https://x.nest.land/std@0.70.0/fmt/colors.ts";
+export * as colors from "https://x.nest.land/std@0.75.0/fmt/colors.ts";
 
 export {
   assert,
   assertEquals,
   assertMatch,
-} from "https://x.nest.land/std@0.70.0/testing/asserts.ts";
+} from "https://x.nest.land/std@0.75.0/testing/asserts.ts";
 
-export * as log from "https://x.nest.land/std@0.70.0/log/mod.ts";
+export * as log from "https://x.nest.land/std@0.75.0/log/mod.ts";
 
-export { join } from "https://x.nest.land/std@0.70.0/path/mod.ts";
-export { exists } from "https://x.nest.land/std@0.70.0/fs/exists.ts";
+export { join } from "https://x.nest.land/std@0.75.0/path/mod.ts";
+export { exists } from "https://x.nest.land/std@0.75.0/fs/exists.ts";
 
 /**************** semver ****************/
 export * as semver from "https://deno.land/x/semver@v1.0.0/mod.ts";
