@@ -50,14 +50,14 @@ task("link", [], async function () {
 desc("Reports the details of what would have been published.");
 task("dry-publish", [], async function () {
   await sh(
-    `eggs publish hatcher -doY --no-check --check-installation --version ${version}-dev --dry-run`,
+    `eggs publish hatcher -DoY --no-check --check-installation --version ${version}-dev --dry-run`,
   );
 });
 
 desc("Publishes hatcher to the nest.land registry.");
 task("publish", [], async function () {
   await sh(
-    `eggs publish hatcher -doY --no-check --check-installation --version ${version}`,
+    `eggs publish hatcher -DoY --no-check --check-installation --version ${version}`,
   );
 });
 
