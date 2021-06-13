@@ -32,7 +32,7 @@ export function getRegistry(registryName: string) {
 }
 
 /** Get latest release version from supported registries */
-export async function latestVersion(
+export function latestVersion(
   registryName: string,
   module: string,
   owner = "_",
@@ -46,7 +46,7 @@ export async function latestVersion(
 }
 
 /** Get latest stable version from supported registries */
-export async function latestStableVersion(
+export function latestStableVersion(
   registryName: string,
   module: string,
   owner = "_",
@@ -60,7 +60,7 @@ export async function latestStableVersion(
 }
 
 /** Get sorted versions from supported registries */
-export async function sortedVersions(
+export function sortedVersions(
   registryName: string,
   module: string,
   owner = "_",

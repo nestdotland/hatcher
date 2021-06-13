@@ -1,17 +1,12 @@
 import { Registry } from "./Registry.ts";
 import { Npm } from "./Npm.ts";
-import {
-  fetchTimeout,
-  parseModule,
-  sortVersions,
-  versionSubstitute,
-} from "../utilities/utils.ts";
+import { parseModule, versionSubstitute } from "../utilities/utils.ts";
 
 export class Skypack extends Registry {
   static domain = "cdn.skypack.dev";
 
   /** Get sorted versions of a module on https://cdn.skypack.dev */
-  static async sortedVersions(
+  static sortedVersions(
     module: string,
     owner?: string,
   ): Promise<string[]> {

@@ -1,17 +1,12 @@
 import { Registry } from "./Registry.ts";
 import { Npm } from "./Npm.ts";
-import {
-  fetchTimeout,
-  parseModule,
-  sortVersions,
-  versionSubstitute,
-} from "../utilities/utils.ts";
+import { parseModule, versionSubstitute } from "../utilities/utils.ts";
 
 export class Jspm extends Registry {
   static domain = "jspm.dev";
 
   /** Get sorted versions of a module on https://jspm.dev */
-  static async sortedVersions(
+  static sortedVersions(
     module: string,
     owner?: string,
   ): Promise<string[]> {

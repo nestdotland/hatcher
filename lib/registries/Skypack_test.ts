@@ -1,4 +1,4 @@
-import { assert, assertEquals, semver } from "../../deps.ts";
+import { assert, assertEquals } from "../../deps.ts";
 import { Skypack } from "./Skypack.ts";
 
 Deno.test("Registries | Skypack | Parse cdn.skypack.dev/pkg URL", () => {

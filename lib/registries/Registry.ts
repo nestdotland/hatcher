@@ -34,11 +34,11 @@ export abstract class Registry {
     module: string,
     owner?: string,
   ): Promise<string[]>;
-  static async sortedVersions(module: string): Promise<string[]> {
-    return [];
+  static sortedVersions(_module: string): Promise<string[]> {
+    return Promise.resolve([]);
   }
 
-  static parseURL(url: string): URLData {
+  static parseURL(_url: string): URLData {
     return {
       name: "",
       owner: "",

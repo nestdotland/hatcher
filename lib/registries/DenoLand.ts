@@ -1,7 +1,5 @@
 import { Registry } from "./Registry.ts";
 import {
-  fetchTimeout,
-  latest,
   parseModule,
   sortVersions,
   versionSubstitute,
@@ -13,7 +11,7 @@ export class DenoLand extends Registry {
   /** Get the sorted versions of a module on https://deno.land */
   static async sortedVersions(
     module: string,
-    owner?: string,
+    _owner?: string,
   ): Promise<string[]> {
     const res = await fetch(
       `https://cdn.deno.land/${module}/meta/versions.json`,

@@ -1,4 +1,4 @@
-import { assert, assertEquals, semver } from "../../deps.ts";
+import { assert, assertEquals } from "../../deps.ts";
 import { DenoLand } from "./DenoLand.ts";
 
 Deno.test("Registries | DenoLand | Parse deno.land/std URL", () => {
