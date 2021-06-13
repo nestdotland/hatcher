@@ -1,4 +1,4 @@
-import { assert, assertEquals, semver } from "../../deps.ts";
+import { assertEquals } from "../../deps.ts";
 import { isVersionUnstable, latestStable, sortVersions } from "./utils.ts";
 
 Deno.test("Utilities | sortVersions", () => {

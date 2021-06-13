@@ -1,4 +1,4 @@
-import { assert, assertEquals, semver } from "../../deps.ts";
+import { assert, assertEquals } from "../../deps.ts";
 import { Github } from "./Github.ts";
 
 Deno.test("Registries | Github | Parse raw.githubusercontent.com URL", () => {

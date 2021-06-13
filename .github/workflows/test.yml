@@ -26,7 +26,9 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Setup Deno
-        uses: denolib/setup-deno@v2
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: "1.10.3"
 
       - name: Setup Drake
         run: deno run -A Drakefile.ts setup-github-actions
@@ -48,7 +50,7 @@ jobs:
           path: eggs-debug.log
 
   nightly:
-    name: Deno Nightly
+    name: Deno Canary
 
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
@@ -66,9 +68,9 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Setup Deno
-        uses: denolib/setup-deno@v2
+        uses: denoland/setup-deno@v1
         with:
-          deno-version: nightly
+          deno-version: canary
 
       - name: Setup Drake
         run: deno run -A Drakefile.ts setup-github-actions

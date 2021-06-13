@@ -12,7 +12,7 @@ export class NestLand extends Registry {
   /** Get sorted versions of a module on https://x.nest.land */
   static async sortedVersions(
     module: string,
-    owner?: string,
+    _owner?: string,
   ): Promise<string[]> {
     const res = await fetch(`https://x.nest.land/api/package/${module}`);
     const json: Module = await res.json();

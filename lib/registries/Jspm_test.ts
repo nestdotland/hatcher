@@ -1,4 +1,4 @@
-import { assert, assertEquals, semver } from "../../deps.ts";
+import { assert, assertEquals } from "../../deps.ts";
 import { Jspm } from "./Jspm.ts";
 
 Deno.test("Registries | Jspm | Parse jspm.dev/pkg URL", () => {

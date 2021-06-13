@@ -1,7 +1,6 @@
 import { Registry } from "./Registry.ts";
 import {
   fetchTimeout,
-  latest,
   sortVersions,
   versionSubstitute,
 } from "../utilities/utils.ts";
@@ -50,7 +49,7 @@ export class Github extends Registry {
 }
 
 interface Release {
-  tag_name: string;
+  "tag_name": string;
 }
 
 interface Tag {

@@ -1,5 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type Replacer = (key: string, value: any) => any;
+type Replacer = (key: string, value: unknown) => unknown;
 
 export interface WriteJsonOptions extends Deno.WriteFileOptions {
   replacer?: Array<number | string> | Replacer;
@@ -8,8 +7,7 @@ export interface WriteJsonOptions extends Deno.WriteFileOptions {
 
 function serialize(
   filePath: string,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  object: any,
+  object: unknown,
   options: WriteJsonOptions,
 ): string {
   try {
@@ -28,8 +26,7 @@ function serialize(
 /* Writes an object to a JSON file. */
 export async function writeJson(
   filePath: string,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  object: any,
+  object: unknown,
   options: WriteJsonOptions = {},
 ): Promise<void> {
   const jsonString = serialize(filePath, object, options);
@@ -43,8 +40,7 @@ export async function writeJson(
 /* Writes an object to a JSON file. */
 export function writeJsonSync(
   filePath: string,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  object: any,
+  object: unknown,
   options: WriteJsonOptions = {},
 ): void {
   const jsonString = serialize(filePath, object, options);

@@ -6,7 +6,7 @@ export class Denopkg extends Registry {
   static domain = "denopkg.com";
 
   /** Get the sorted versions of a module on https://denopkg.com */
-  static async sortedVersions(
+  static sortedVersions(
     module: string,
     owner: string,
   ): Promise<string[]> {
