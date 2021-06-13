@@ -27,6 +27,8 @@ jobs:
 
       - name: Setup Deno
         uses: denoland/setup-deno@v1
+        with:
+          deno-version: "1.10.3"
 
       - name: Setup Drake
         run: deno run -A Drakefile.ts setup-github-actions
