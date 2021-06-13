@@ -1,6 +1,8 @@
 import { desc, run, sh, task } from "https://x.nest.land/drake@1.4.4/mod.ts";
 import { version } from "./lib/version.ts";
 
+const encoder = new TextEncoder();
+
 desc("Install eggs.");
 task("install-eggs", [], async function () {
   await sh(
@@ -64,9 +66,12 @@ task("dry-ship", ["link", "dry-publish"]);
 desc("Ship hatcher to nest.land.");
 task("ship", ["link", "publish"]);
 
-task("get-version", [], function () {
+task("get-version", [], async function () {
   console.log(`Hatcher version: ${version}`);
-  console.log(`::set-env name=HATCHER_VERSION::${version}`);
+  const env = encoder.encode(`\nHATCHER_VERSION=${version}\n`);
+  const GITHUB_ENV = Deno.env.get("GITHUB_ENV");
+  if (!GITHUB_ENV) throw new Error("Unable to get Github env");
+  await Deno.writeFile(GITHUB_ENV, env, { append: true });
 });
 
 task("setup-github-actions", [], async function () {
@@ -75,21 +80,6 @@ task("setup-github-actions", [], async function () {
   });
   await process.status();
   process.close();
-
-  switch (Deno.build.os) {
-    case "windows":
-      console.log("::add-path::C:\\Users\\runneradmin\\.deno\\bin");
-      break;
-    case "linux":
-      console.log("::add-path::/home/runner/.deno/bin");
-      console.log("::set-env name=SHELL::/bin/bash");
-      break;
-    case "darwin":
-      console.log("::add-path::/Users/runner/.deno/bin");
-      break;
-    default:
-      break;
-  }
 });
 
 desc("Development tools. Should ideally be run before each commit.");
