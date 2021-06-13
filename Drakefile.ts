@@ -7,7 +7,7 @@ const encoder = new TextEncoder();
 desc("Install eggs.");
 task("install-eggs", [], async function () {
   await sh(
-    `deno install -Af --unstable https://x.nest.land/eggs@0.3.1/eggs.ts`,
+    `deno install -Af --unstable https://x.nest.land/eggs@0.3.7/eggs.ts`,
   );
 });
 
