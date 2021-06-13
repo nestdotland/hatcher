@@ -43,7 +43,7 @@ desc("Links the nest.land API key.");
 task("link", [], async function () {
   await sh(
     `eggs link ${Deno.env.get("NESTAPIKEY") ||
-      "null"} -do`,
+      "null"} -Do`,
   );
 });
 
