@@ -15,5 +15,7 @@ export { exists } from "https://x.nest.land/std@0.97.0/fs/exists.ts";
 /**************** semver ****************/
 export * as semver from "https://deno.land/x/semver@v1.4.0/mod.ts";
 
-/**************** cliffy ****************/
-export { Table } from "https://x.nest.land/cliffy@0.19.1/table/mod.ts";
+/**************** path-to-regexp ****************/
+export { pathToRegexp } from "https://cdn.skypack.dev/path-to-regexp@6.2.0?dts";
+import * as PathToRegexp from "https://cdn.skypack.dev/path-to-regexp@6.2.0?dts";
+export type Key = PathToRegexp.Key

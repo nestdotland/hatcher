@@ -4,6 +4,8 @@ import { join } from "./deps.ts";
 
 const encoder = new TextEncoder();
 
+const encoder = new TextEncoder();
+
 desc("Install eggs.");
 task("install-eggs", [], async function () {
   await sh(
