@@ -1,4 +1,4 @@
-import { Registry, RegistrySpecifier, VariableMap } from "./Registry.ts";
+import { Registry, RegistrySpecifier, VariableMap } from "./registry.ts";
 import { HatcherError } from "../utilities/error.ts";
 import { Key, pathToRegexp } from "../../deps.ts";
 import { Err, Ok, Result } from "./error.ts";
@@ -14,7 +14,7 @@ export class BaseModule {
     protected variables: Map<string, string | undefined>,
   ) {}
 
-  protected fillURL(url: string): string | null {
+  protected fillEndpoint(url: string): string | null {
     try {
       return url.replace(
         /\${(\w+)}/g,
@@ -37,7 +37,7 @@ export class BaseModule {
   }
 
   protected async getEndpointResponse(endpoint: string): Result<string[]> {
-    const url = this.fillURL(endpoint);
+    const url = this.fillEndpoint(endpoint);
     if (url === null) return Err("Some variables couldn't be filled out.", 0);
     const result = await fetch(url);
     if (!result.ok) Err("Error while fetching endpoint url", 0);
@@ -78,19 +78,19 @@ export class BaseModule {
 
   /* --- */
 
-  get versions(): Result<string[]> {
+  async versions(): Result<string[]> {
     return this.getCompletion("version");
   }
 
-  get modules(): Result<string[]> {
+  async modules(): Result<string[]> {
     return this.getCompletion("module");
   }
 
-  get paths(): Result<string[]> {
+  async paths(): Result<string[]> {
     return this.getCompletion("path");
   }
 
-  get authors(): Result<string[]> {
+  async authors(): Result<string[]> {
     return this.getCompletion("author");
   }
 }

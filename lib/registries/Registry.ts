@@ -1,14 +1,32 @@
 import { latest, latestStable } from "../utilities/utils.ts";
 import { HatcherError } from "../utilities/error.ts";
 import { Err, Ok, Result } from "./error.ts";
-import { Key, pathToRegexp } from "../../deps.ts";
+import { compilePath, Key, pathToRegexp } from "../../deps.ts";
 import { BaseModule, Module } from "./Module.ts";
+
+type JSONObject = { [key: string]: JSONValue };
+type JSONArray = JSONValue[];
+type JSONValue =
+  | string
+  | number
+  | JSONObject
+  | JSONArray
+  | boolean
+  | null;
+export type Json = JSONArray | JSONObject;
+
+export interface CompatibilityLayer {
+  headers?: Headers;
+  transform?: (res: Response) => Promise<string[]>;
+  constant?: string[]
+}
 
 export interface RegistrySpecifier {
   schema: string;
   variables: {
     key: string;
     url: string;
+    compatibilityLayer?: CompatibilityLayer
   }[];
 }
 
@@ -147,11 +165,11 @@ export class Registry {
 
 export class PartialModule {
   protected reverseVariables: Map<string, keyof VariableMap>;
-  protected variables: Map<string, string | undefined>;
+  protected variablesMap: Map<string, string | undefined>;
 
   constructor(
     protected registry: Registry,
-    variables: Partial<VariableMap>,
+    protected variables: Partial<VariableMap>,
   ) {
     this.reverseVariables = new Map();
     for (const key in registry.variables) {
@@ -160,7 +178,7 @@ export class PartialModule {
         key as keyof VariableMap,
       );
     }
-    this.variables = new Map(Object.entries(variables));
+    this.variablesMap = new Map(Object.entries(variables));
   }
 
   protected matchSpecifier(varName: keyof VariableMap): Result<string[]> {
@@ -172,7 +190,7 @@ export class PartialModule {
       return [...variables].every((v) => {
         const mappedName = this.reverseVariables.get(v[1]);
         if (mappedName === undefined) return false;
-        return this.variables.has(mappedName);
+        return this.variablesMap.has(mappedName);
       });
     });
     if (specifier === undefined) {
@@ -185,23 +203,42 @@ export class PartialModule {
     return new BaseModule(
       this.registry,
       specifier,
-      this.variables,
-    )[`${varName}s` as `${keyof VariableMap}s`];
+      this.variablesMap,
+    )[`${varName}s` as `${keyof VariableMap}s`]();
   }
 
-  get versions(): Result<string[]> {
+  async versions(): Result<string[]> {
     return this.matchSpecifier("version");
   }
 
-  get modules(): Result<string[]> {
+  async modules(): Result<string[]> {
     return this.matchSpecifier("module");
   }
 
-  get paths(): Result<string[]> {
+  async paths(): Result<string[]> {
     return this.matchSpecifier("path");
   }
 
-  get authors(): Result<string[]> {
+  async authors(): Result<string[]> {
     return this.matchSpecifier("author");
+  }
+
+  toURL(): URL | null {
+    const specifier = this.registry.intellisense.registries.find((registry) =>
+      registry.variables.every((variable) =>
+        this.variablesMap.has(variable.key)
+      )
+    );
+    if (specifier === undefined) return null;
+    const toPath = compilePath(specifier.schema);
+    return new URL(
+      `${this.registry.protocol}${this.registry.host}${
+        toPath(this.variables) /* TODO: Translate variable names */
+      }`,
+    );
+  }
+
+  toString(): string | null {
+    return this.toURL()?.href ?? null;
   }
 }
