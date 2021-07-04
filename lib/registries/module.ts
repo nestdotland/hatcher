@@ -1,7 +1,8 @@
-import { Registry, RegistrySpecifier, VariableMap } from "./registry.ts";
+import { Registry } from "./registry.ts";
 import { HatcherError } from "../utilities/error.ts";
 import { Key, pathToRegexp } from "../../deps.ts";
 import { Err, Ok, Result } from "./error.ts";
+import type { RegistrySpecifier, Variable, VariableMap } from "./registry.ts";
 
 function toURL(url: URL | string): URL {
   return typeof url === "string" ? new URL(url) : url;
@@ -36,12 +37,27 @@ export class BaseModule {
     }
   }
 
-  protected async getEndpointResponse(endpoint: string): Result<string[]> {
-    const url = this.fillEndpoint(endpoint);
-    if (url === null) return Err("Some variables couldn't be filled out.", 0);
-    const result = await fetch(url);
+  protected async getEndpointResponse(variable: Variable): Result<string[]> {
+    const filled = this.fillEndpoint(variable.url);
+    if (filled === null) {
+      return Err("Some variables couldn't be filled out.", 0);
+    }
+    const url = new URL(filled);
+    if (url.protocol === "hatcher:") {
+      if (variable.compatibilityLayer?.fetch === undefined) {
+        return Err("fetch function was not provided", 0);
+      }
+      return Ok(
+        await variable.compatibilityLayer.fetch(...url.pathname.split("/")),
+      );
+    }
+    const result = await fetch(filled, {
+      headers: variable.compatibilityLayer?.headers,
+    });
     if (!result.ok) Err("Error while fetching endpoint url", 0);
-    const json = await result.json();
+    const json = variable.compatibilityLayer?.transform === undefined
+      ? await result.json()
+      : variable.compatibilityLayer.transform(result);
     if (!Array.isArray(json)) Err("Endpoint response is not an array.", 0);
     return Ok(json);
   }
@@ -53,7 +69,7 @@ export class BaseModule {
     if (variable === undefined) {
       return Err(`No ${varName} variable with this url`, 0);
     }
-    return this.getEndpointResponse(variable.url);
+    return this.getEndpointResponse(variable);
   }
 
   protected getVariable(varName: keyof VariableMap): string | null {

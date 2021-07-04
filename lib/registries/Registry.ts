@@ -2,32 +2,23 @@ import { latest, latestStable } from "../utilities/utils.ts";
 import { HatcherError } from "../utilities/error.ts";
 import { Err, Ok, Result } from "./error.ts";
 import { compilePath, Key, pathToRegexp } from "../../deps.ts";
-import { BaseModule, Module } from "./Module.ts";
-
-type JSONObject = { [key: string]: JSONValue };
-type JSONArray = JSONValue[];
-type JSONValue =
-  | string
-  | number
-  | JSONObject
-  | JSONArray
-  | boolean
-  | null;
-export type Json = JSONArray | JSONObject;
+import { BaseModule, Module } from "./module.ts";
 
 export interface CompatibilityLayer {
   headers?: Headers;
   transform?: (res: Response) => Promise<string[]>;
-  constant?: string[]
+  fetch?: (...variables: string[]) => Promise<string[]>;
+}
+
+export interface Variable {
+  key: string;
+  url: string;
+  compatibilityLayer?: CompatibilityLayer;
 }
 
 export interface RegistrySpecifier {
   schema: string;
-  variables: {
-    key: string;
-    url: string;
-    compatibilityLayer?: CompatibilityLayer
-  }[];
+  variables: Variable[];
 }
 
 export interface Intellisense {
