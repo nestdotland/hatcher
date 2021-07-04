@@ -6,6 +6,18 @@ const octokit = new Octokit();
 
 export const namingRules = "[\\w\\d_\\-\\.]+";
 
+export const options = {
+  module: {
+    filterTypescript: false,
+  },
+  version: {
+    releases: true,
+    tags: false,
+    branches: true,
+    commits: false,
+  },
+};
+
 export const author: Variable = {
   key: "author",
   url: "hatcher:///",
@@ -40,7 +52,13 @@ export const module: Variable = {
         },
       );
       for await (const response of iterator) {
-        modules.push(...response.data.map((repo) => repo.name));
+        modules.push(
+          ...response.data
+            .filter((repo) =>
+              repo.language === "TypeScript" || !options.module.filterTypescript
+            )
+            .map((repo) => repo.name),
+        );
       }
       return modules;
     },
@@ -54,25 +72,52 @@ export const version: Variable = {
     async fetch(author: string, module: string) {
       const versions: string[] = [];
       const repo = { owner: author, repo: module };
-      const versionIterator = octokit.paginate.iterator(
-        octokit.rest.repos.listReleases,
-        {
-          ...repo,
-          per_page: 100,
-        },
-      );
-      for await (const response of versionIterator) {
-        versions.push(...response.data.map((release) => release.tag_name));
+      if (options.version.tags) {
+        const tagIterator = octokit.paginate.iterator(
+          octokit.rest.repos.listTags,
+          {
+            ...repo,
+            per_page: 100,
+          },
+        );
+        for await (const response of tagIterator) {
+          versions.push(...response.data.map((tag) => tag.name));
+        }
+      } else if (options.version.releases) {
+        const releaseIterator = octokit.paginate.iterator(
+          octokit.rest.repos.listReleases,
+          {
+            ...repo,
+            per_page: 100,
+          },
+        );
+        for await (const response of releaseIterator) {
+          versions.push(...response.data.map((release) => release.tag_name));
+        }
       }
-      const branchIterator = octokit.paginate.iterator(
-        octokit.rest.repos.listBranches,
-        {
-          ...repo,
-          per_page: 100,
-        },
-      );
-      for await (const response of branchIterator) {
-        versions.push(...response.data.map((branch) => branch.name));
+      if (options.version.branches) {
+        const branchIterator = octokit.paginate.iterator(
+          octokit.rest.repos.listBranches,
+          {
+            ...repo,
+            per_page: 100,
+          },
+        );
+        for await (const response of branchIterator) {
+          versions.push(...response.data.map((branch) => branch.name));
+        }
+      }
+      if (options.version.commits) {
+        const commitIterator = octokit.paginate.iterator(
+          octokit.rest.repos.listCommits,
+          {
+            ...repo,
+            per_page: 100,
+          },
+        );
+        for await (const response of commitIterator) {
+          versions.push(...response.data.map((commit) => commit.sha));
+        }
       }
       return versions;
     },

@@ -5,7 +5,9 @@ import * as gh from "./_github.ts";
 /* built-in intellisense */
 export const deno = new Registry("deno.land");
 export const nest = new Registry("x.nest.land");
-export const crux = new Registry("crux.land");
+export const crux = new Registry("crux.land", {
+  variableMapping: new Map([["version", "tag"]]),
+});
 
 /* npm based intellisense */
 
@@ -14,7 +16,7 @@ const esmQueryParams = {
   url: "hatcher:///",
   compatibilityLayer: {
     async fetch() {
-      return [
+      return await [
         "bundle",
         "dev",
         "deps",
@@ -50,13 +52,13 @@ const skypackQueryParams = {
   key: "query",
   url: "hatcher:///",
   compatibilityLayer: {
-    async fetch() {
-      return [
+    fetch() {
+      return Promise.resolve([
         "dts",
         "min",
         "dist",
         "meta",
-      ];
+      ]);
     },
   },
 };
@@ -160,7 +162,8 @@ export const jsdelivr = new Registry("cdn.jsdelivr.net", {
         },
       }],
     }, {
-      schema: `/gh/:author/:module(${npm.packageName})@:version/:path*`,
+      schema:
+        `/gh/:author(${gh.namingRules})/:module(${gh.namingRules})@:version/:path*`,
       variables: [gh.author, gh.module, gh.version, {
         ...gh.path,
         compatibilityLayer: {
@@ -173,7 +176,8 @@ export const jsdelivr = new Registry("cdn.jsdelivr.net", {
         },
       }],
     }, {
-      schema: `/gh/:author/:module(${npm.packageName})/:path*`,
+      schema:
+        `/gh/:author(${gh.namingRules})/:module(${gh.namingRules})/:path*`,
       variables: [gh.author, npm.module, {
         ...gh.versionlessPath,
         compatibilityLayer: {

@@ -2,7 +2,7 @@ import { Registry } from "./registry.ts";
 import { HatcherError } from "../utilities/error.ts";
 import { Key, pathToRegexp } from "../../deps.ts";
 import { Err, Ok, Result } from "./error.ts";
-import type { RegistrySpecifier, Variable, VariableMap } from "./registry.ts";
+import type { RegistrySpecifier, Variable } from "./registry.ts";
 
 function toURL(url: URL | string): URL {
   return typeof url === "string" ? new URL(url) : url;
@@ -12,7 +12,7 @@ export class BaseModule {
   constructor(
     readonly registry: Registry,
     readonly specifier: RegistrySpecifier,
-    protected variables: Map<string, string | undefined>,
+    protected variables: Map<string, string>,
   ) {}
 
   protected fillEndpoint(url: string): string | null {
@@ -51,9 +51,7 @@ export class BaseModule {
         await variable.compatibilityLayer.fetch(...url.pathname.split("/")),
       );
     }
-    const result = await fetch(filled, {
-      headers: variable.compatibilityLayer?.headers,
-    });
+    const result = await fetch(filled);
     if (!result.ok) Err("Error while fetching endpoint url", 0);
     const json = variable.compatibilityLayer?.transform === undefined
       ? await result.json()
@@ -62,52 +60,60 @@ export class BaseModule {
     return Ok(json);
   }
 
-  protected async getCompletion(varName: keyof VariableMap): Result<string[]> {
-    const variable = this.specifier.variables.find((v) =>
-      v.key === this.registry.variables[varName]
-    );
+  get(varName: string): string | null {
+    return this.variables.get(varName) ?? null;
+  }
+
+  getEvery(varName: string): Result<string[]> {
+    const variable = this.specifier.variables.find((v) => v.key === varName);
     if (variable === undefined) {
       return Err(`No ${varName} variable with this url`, 0);
     }
     return this.getEndpointResponse(variable);
   }
 
-  protected getVariable(varName: keyof VariableMap): string | null {
-    return this.variables.get(this.registry.variables[varName]) ?? null;
+  protected _get(varName: string): string | null {
+    return this.get(this.registry.mapVariable(varName));
   }
 
-  get version(): string | null {
-    return this.getVariable("version");
-  }
-
-  get module(): string | null {
-    return this.getVariable("module");
-  }
-
-  get path(): string | null {
-    return this.getVariable("path");
-  }
-
-  get author(): string | null {
-    return this.getVariable("author");
+  protected _getEvery(varName: string): Result<string[]> {
+    return this.getEvery(this.registry.mapVariable(varName));
   }
 
   /* --- */
 
-  async versions(): Result<string[]> {
-    return this.getCompletion("version");
+  get version(): string | null {
+    return this._get("version");
   }
 
-  async modules(): Result<string[]> {
-    return this.getCompletion("module");
+  get module(): string | null {
+    return this._get("module");
   }
 
-  async paths(): Result<string[]> {
-    return this.getCompletion("path");
+  get path(): string | null {
+    return this._get("path");
   }
 
-  async authors(): Result<string[]> {
-    return this.getCompletion("author");
+  get author(): string | null {
+    return this._get("author");
+  }
+
+  /* --- */
+
+  versions(): Result<string[]> {
+    return this._getEvery("version");
+  }
+
+  modules(): Result<string[]> {
+    return this._getEvery("module");
+  }
+
+  paths(): Result<string[]> {
+    return this._getEvery("path");
+  }
+
+  authors(): Result<string[]> {
+    return this._getEvery("author");
   }
 }
 

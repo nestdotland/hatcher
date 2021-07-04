@@ -1,11 +1,9 @@
-import { latest, latestStable } from "../utilities/utils.ts";
 import { HatcherError } from "../utilities/error.ts";
-import { Err, Ok, Result } from "./error.ts";
-import { compilePath, Key, pathToRegexp } from "../../deps.ts";
-import { BaseModule, Module } from "./module.ts";
+import { Result } from "./error.ts";
+import { compilePath, pathToRegexp } from "../../deps.ts";
+import { BaseModule } from "./module.ts";
 
 export interface CompatibilityLayer {
-  headers?: Headers;
   transform?: (res: Response) => Promise<string[]>;
   fetch?: (...variables: string[]) => Promise<string[]>;
 }
@@ -31,18 +29,11 @@ export interface Cache {
   intellisense?: Intellisense;
 }
 
-export interface VariableMap {
-  module: string;
-  author: string;
-  version: string;
-  path: string;
-}
-
 interface RegistryOptions_ {
   intellisense: Intellisense;
   intellisensePath?: string;
   protocol?: string;
-  variables?: Partial<VariableMap>;
+  variableMapping?: Map<string, string>;
 }
 
 export type RegistryOptions =
@@ -58,7 +49,7 @@ export class Registry {
   protected cache: Cache;
   readonly intellisensePath?: string;
   readonly protocol: string;
-  public variables: VariableMap;
+  public variableMapping: Map<string, string>;
 
   static registries: Registry[] = [];
 
@@ -75,13 +66,13 @@ export class Registry {
       Registry.registries.push(this);
     }
     this.protocol = options.protocol ?? "https:";
-    this.variables = {
-      module: "module",
-      author: "author",
-      version: "version",
-      path: "path",
-      ...options.variables,
-    };
+    this.variableMapping = options.variableMapping ?? new Map();
+  }
+
+  static get(host: string, protocol = "https:"): Registry | null {
+    return Registry.registries.find((registry) =>
+      registry.host === host && registry.protocol === protocol
+    ) ?? null;
   }
 
   clearCache() {
@@ -143,45 +134,52 @@ export class Registry {
     return null;
   }
 
-  static get(host: string, protocol = "https:"): Registry | null {
-    return Registry.registries.find((registry) =>
-      registry.host === host && registry.protocol === protocol
-    ) ?? null;
+  mapVariable(variable: string): string {
+    return this.variableMapping.get(variable) ?? variable;
   }
 
-  from(variables: Partial<VariableMap>): PartialModule {
+  mapVariables(variables: Map<string, string>): Map<string, string> {
+    const res = new Map<string, string>();
+    for (const [key, value] of variables) {
+      res.set(this.mapVariable(key), value);
+    }
+    return res;
+  }
+
+  get reverseVariableMapping(): Map<string, string> {
+    const res = new Map<string, string>();
+    for (const [key, value] of this.variableMapping) {
+      res.set(value, key);
+    }
+    return res;
+  }
+
+  from(variables: Record<string, string>): PartialModule {
     return new PartialModule(this, variables);
   }
 }
 
 export class PartialModule {
-  protected reverseVariables: Map<string, keyof VariableMap>;
-  protected variablesMap: Map<string, string | undefined>;
+  protected variables: Map<string, string>;
 
   constructor(
     protected registry: Registry,
-    protected variables: Partial<VariableMap>,
+    variables: Record<string, string> | Map<string, string>,
   ) {
-    this.reverseVariables = new Map();
-    for (const key in registry.variables) {
-      this.reverseVariables.set(
-        registry.variables[key as keyof VariableMap],
-        key as keyof VariableMap,
-      );
-    }
-    this.variablesMap = new Map(Object.entries(variables));
+    this.variables = variables instanceof Map
+      ? variables
+      : new Map(Object.entries(variables));
   }
 
-  protected matchSpecifier(varName: keyof VariableMap): Result<string[]> {
-    const varNameMapped = this.registry.variables[varName];
+  getEvery(varName: string): Result<string[]> {
+    const reverseVariableMapping = this.registry.reverseVariableMapping;
+    const varNameMapped = this.registry.mapVariable(varName);
     const specifier = this.registry.intellisense.registries.find((registry) => {
       const variable = registry.variables.find((v) => v.key === varNameMapped);
       if (variable === undefined) return false;
       const variables = variable.url.matchAll(/\${(\w+)}|\${{(\w+)}}/g);
       return [...variables].every((v) => {
-        const mappedName = this.reverseVariables.get(v[1]);
-        if (mappedName === undefined) return false;
-        return this.variablesMap.has(mappedName);
+        return this.variables.has(reverseVariableMapping.get(v[1]) ?? v[1]);
       });
     });
     if (specifier === undefined) {
@@ -194,37 +192,35 @@ export class PartialModule {
     return new BaseModule(
       this.registry,
       specifier,
-      this.variablesMap,
-    )[`${varName}s` as `${keyof VariableMap}s`]();
+      this.variables,
+    ).getEvery(varNameMapped);
   }
 
-  async versions(): Result<string[]> {
-    return this.matchSpecifier("version");
+  versions(): Result<string[]> {
+    return this.getEvery("version");
   }
 
-  async modules(): Result<string[]> {
-    return this.matchSpecifier("module");
+  modules(): Result<string[]> {
+    return this.getEvery("module");
   }
 
-  async paths(): Result<string[]> {
-    return this.matchSpecifier("path");
+  paths(): Result<string[]> {
+    return this.getEvery("path");
   }
 
-  async authors(): Result<string[]> {
-    return this.matchSpecifier("author");
+  authors(): Result<string[]> {
+    return this.getEvery("author");
   }
 
   toURL(): URL | null {
     const specifier = this.registry.intellisense.registries.find((registry) =>
-      registry.variables.every((variable) =>
-        this.variablesMap.has(variable.key)
-      )
+      registry.variables.every((variable) => this.variables.has(variable.key))
     );
     if (specifier === undefined) return null;
     const toPath = compilePath(specifier.schema);
     return new URL(
       `${this.registry.protocol}${this.registry.host}${
-        toPath(this.variables) /* TODO: Translate variable names */
+        toPath(this.registry.mapVariables(this.variables))
       }`,
     );
   }

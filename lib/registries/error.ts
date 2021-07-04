@@ -4,11 +4,11 @@ export type Result<T> = Promise<OkResult<T> | ErrResult>;
 
 export async function Ok<T>(value: T | Promise<T>): Promise<OkResult<T>> {
   if (value instanceof Promise) {
-    return [await value, null]
+    return [await value, null];
   }
   return [value, null];
 }
 
-export function Err(reason: string, code: number): ErrResult {
-  return [null, { reason, code }];
+export async function Err(reason: string, code: number): Promise<ErrResult> {
+  return await [null, { reason, code }];
 }
